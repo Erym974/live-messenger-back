@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}Messenger | Back{% endblock %}
+
+{% block body %}
+    <main id="login">
+        <form method="post" class="login-form box p-4">
+            <h1 class="h3 mb-3 font-weight-normal text-dark">Se connecter</h1>
+            <hr>
+            <div class="form-group mt-3">
+                <label for="inputEmail">Email</label>
+                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+            </div>
+            <div class="form-group mt-3">
+                <label for="inputPassword">Mot de passe</label>
+                <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+            </div>
+
+            {% if error %}
+                <div class="alert alert-danger mt-3">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            <input type="hidden" name="_csrf_token"
+                value="{{ csrf_token('authenticate') }}"
+            >
+
+            <div class="button-container">
+                <button class="btn btn-lg btn-primary mt-4" type="submit">
+                    Se connecter
+                </button>
+            </div>
+        </form>
+    </main>
+{% endblock %}

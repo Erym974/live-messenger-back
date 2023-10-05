@@ -1,0 +1,51 @@
+invitations:
+  name: "Invitations"
+  slug: "invitations"
+  routes:
+      /api/invitations:
+        get:
+          index: 0
+          description: >
+            Return a list of invitations sended or received by the user.
+          response: >
+            {
+              "status": true,
+              "datas": [
+                {
+                  "id": 1,
+                  "emmitter": User::class,
+                  "receiver": User::class
+                },
+                ...
+              ] 
+            }  
+        post: 
+          index: 1
+          description: >
+            Send new invitation to a user.
+          body: >
+            {
+              "code": [user.codeFriend]
+            } 
+          response: >
+            {
+              "status": true,
+              "datas": {
+                "id": 1,
+                "emmitter": User::class,
+                "receiver": User::class
+              }
+            } 
+        delete: 
+          index: 2
+          description: >
+            Delete invitation.
+          body: >
+            {
+              "invitation": [invitation.id]
+            } 
+          response: >
+            {
+              "status": true,
+              "datas": null
+            } 

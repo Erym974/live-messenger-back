@@ -1,0 +1,49 @@
+<h2>{{ data.name }}</h2>
+<div class="accordion" id="accordion-{{ data.slug }}">
+    {% for route, methods in data.routes %}
+        {% set id = random(10000000, 999999999999) %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-{{ id }}-{{ data.slug }}">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ id }}-{{ data.slug }}" aria-expanded="false" aria-controls="collapse-{{ id }}-{{ data.slug }}">
+                {% if "post" in methods|keys %}
+                <span class="badge bg-primary me-2">POST</span>
+                {% endif %}
+                {% if "get" in methods|keys %}
+                <span class="badge bg-info me-2">GET</span>
+                {% endif %}
+                {% if "delete" in methods|keys %}
+                <span class="badge bg-danger me-2">DELETE</span>
+                {% endif %}
+                {% if "patch" in methods|keys %}
+                <span class="badge bg-warning me-2">PATCH</span>
+                {% endif %}
+                <strong> : {{ route }}</strong>
+            </button>
+            </h2>
+            <div id="collapse-{{ id }}-{{ data.slug }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ id }}-{{ data.slug }}" data-bs-parent="#accordion-{{ data.slug }}">
+            <div class="accordion-body">
+                {% for method, content in methods %}
+                    <div class="{{ content.index != 0 ? "mt-4" : "mt-2" }}">
+                        <h2 class="text-dark h5">{{ method|upper }} : </h2>
+                        <div class="d-flex f-c">
+                            {% if content.description is defined  %}
+                            <h3 class="text-dark h6">Description :</h3>
+                            <span class="pre-wrap">{{ content.description }}</span>
+                            {% endif %}
+                            {% if content.body is defined  %}
+                            <h3 class="text-dark h6 mt-3 mb-0">Body :</h3>
+                            <span class="block text-white">{{ content.body }}</span>
+                            {% endif %}
+                            {% if content.response is defined  %}
+                            <h3 class="text-dark h6 mt-3 mb-0">Response :</h3>
+                            <span class="block text-white">{{ content.response }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            </div>
+        </div>  
+    {% endfor %}
+</div>
+<hr>
