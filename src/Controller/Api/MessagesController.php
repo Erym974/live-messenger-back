@@ -8,6 +8,7 @@ use App\Entity\Reaction;
 use App\Entity\User;
 use App\Service\MessageService;
 use App\Service\MessageStatus;
+use App\Service\RealtimeService;
 use App\Service\ResponseService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,11 +20,14 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Validator\Constraints\Collection;
 
+
+use Symfony\Component\Serializer\SerializerInterface;
+
 #[isGranted('JWT_HEADER_ACCESS')]
 class MessagesController extends AbstractController
 {
 
-    public function __construct(private EntityManagerInterface $em, private UserPasswordHasherInterface $hasher, private ResponseService $responseService)
+    public function __construct(private RealtimeService $realtime, private SerializerInterface $serializer, private EntityManagerInterface $em, private UserPasswordHasherInterface $hasher, private ResponseService $responseService)
     {
         
     }
@@ -60,6 +64,12 @@ class MessagesController extends AbstractController
             $this->em->persist($group);
             $this->em->persist($message);
             $this->em->flush();
+
+            $this->realtime->publish(
+                "/messenger/" . $group->getId() . "/new-message", 
+                $this->serializer->serialize($message, 'json', ['groups' => 'messages:read']), 
+                $group->getMembers()
+            );
 
             return $this->responseService->ReturnSuccess($message, ['groups' => 'messages:read']);
 
@@ -141,6 +151,14 @@ class MessagesController extends AbstractController
             $react->setCount(count($react->getUsers()));
         }
 
+        /** @var Group */
+        $group = $message->getGroup();
+
+        $this->realtime->publish(
+            "/messenger/" . $group->getId() . "/edit-message", 
+            $this->serializer->serialize($message, 'json', ['groups' => 'messages:read']), 
+            $group->getMembers()
+        );
         return $this->responseService->ReturnSuccess($message, ['groups' => 'messages:read']);
 
     }

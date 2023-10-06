@@ -2,11 +2,9 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Friend;
 use App\Entity\Invitation;
 use App\Entity\User;
-use App\Service\Api\WorkspaceService;
-use App\Service\FriendStatus;
+use App\Service\JWT;
 use App\Service\ResponseService;
 use App\Service\SettingService;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,8 +12,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[IsGranted('JWT_HEADER_ACCESS')]
@@ -101,16 +99,33 @@ class UserController extends AbstractController
         }
 
         $user->setSettings($settingService->fetchSettings($user));
+        
 
-        return $this->json(
-            [
-                "status" => true,
-                "datas" => $user,
-            ],
-            200,
-            ['Content-Type' => "application/json"],
-            ['groups' => 'user:read']
-        );
+
+        $mercure = JWT::generate(86400, [
+            "mercure" => [
+                "subscribe" => [
+                    "http://localhost:3000/user/" . $user->getId(),
+                ],
+            ]
+        ]);
+
+        $response = $this->responseService->ReturnSuccess([
+            "user" => $user,
+        ], ['groups' => 'user:read']);
+
+        $response->headers->setCookie(new Cookie(
+            'mercureAuthorization',
+            $mercure,
+            (new \DateTime())->add(new \DateInterval('PT2H')),
+            '/.well-know/mercure',
+            null,
+            false,
+            true,
+            false
+        ));
+
+        return $response;
 
     }
 

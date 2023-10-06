@@ -9,13 +9,15 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
+
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 
 class PokesController extends AbstractController
 {
 
-    public function __construct(private EntityManagerInterface $em, private ResponseService $responseService)
+    public function __construct(private EntityManagerInterface $em, private ResponseService $responseService, private HubInterface $hub)
     {
         
     }
@@ -33,6 +35,13 @@ class PokesController extends AbstractController
         /** @var Group */
         $group = $this->em->getRepository(Group::class)->find($params['group']);
         if(!$group->hasMember($user)) return $this->responseService->ReturnError(403, "You are not a member of this group");
+
+        $update = new Update(
+            'https://example.com/books/1',
+            json_encode(['status' => 'OutOfStock'])
+        );
+
+        $this->hub->publish($update);
 
         return$this->responseService->ReturnSuccess(null);
     }
