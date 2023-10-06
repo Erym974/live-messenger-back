@@ -30,34 +30,19 @@ class RealtimeService extends AbstractService {
         if(substr($topic, 0, 1) != "/") $topic = "/" . $topic;
         $final_url = $front . $topic;
 
-        $finalTargets = [];
+        // $finalTargets = [];
         
-        foreach($targets as $target){
-            array_push($finalTargets, $front . "/users/" . $target->getId());
-        }
+        // foreach($targets as $target){
+        //     array_push($finalTargets, $front . "/users/" . $target->getId());
+        // }
 
         $this->bus->dispatch(new Update(
             $final_url,
-            $datas
+            $datas,
         ));
 
         return null;
 
     }
-    // public function publish($url, $datas) : null
-    // {
-        
-    //     $url = $_ENV['FRONTEND_URL'] . $url;
-
-    //     $update = new Update(
-    //         $url,
-    //         $datas,
-    //     );
-
-    //     $this->bus->dispatch($update);
-
-    //     return null;
-
-    // }
 
 }

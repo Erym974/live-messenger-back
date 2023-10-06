@@ -40,7 +40,7 @@ security:
     access_control:
         - { path: ^/auth, roles: PUBLIC_ACCESS }
         - { path: ^/api/*, roles: JWT_HEADER_ACCESS }
-        - { path: ^/documentations, roles: ROLE_ADMIN }
+        - { path: ^/documentations, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

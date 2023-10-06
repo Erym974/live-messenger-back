@@ -37,6 +37,32 @@ class JWT extends AbstractService {
 
     }
 
+    static public function generateMercureJwt($payload = [],) : string
+    {
+
+        $payload = [
+            'iat' => (new DateTime())->getTimestamp(),
+            ...$payload
+        ];
+
+        $base64Header = base64_encode(json_encode(['typ' => 'JWT', 'alg' => 'HS256']));
+        $base64Payload = base64_encode(json_encode($payload));
+
+        $base64Header = str_replace(['+', '/', '='], ['-', '_', ''], $base64Header);
+        $base64Payload = str_replace(['+', '/', '='], ['-', '_', ''], $base64Payload);
+
+        $secret = $_ENV['JWT_SECRET'];
+
+        $signature = hash_hmac('sha256', $base64Header . "." . $base64Payload, $secret, true);
+
+        $base64Signature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+
+        $jwt = $base64Header . "." . $base64Payload . "." . $base64Signature;
+
+        return $jwt;
+
+    }
+
     static public function identify(string $jwt) : bool
     {
         if(!$jwt) return false;

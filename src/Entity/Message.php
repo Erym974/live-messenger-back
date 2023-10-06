@@ -48,10 +48,14 @@ class Message
     #[Groups(['messages:read'])]
     private Collection $reactions;
 
+    #[ORM\OneToMany(mappedBy: 'message', targetEntity: File::class)]
+    private Collection $files;
+
     public function __construct()
     {
         $this->sended_at = new \DateTimeImmutable();
         $this->reactions = new ArrayCollection();
+        $this->files = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -165,6 +169,36 @@ class Message
             // set the owning side to null (unless already changed)
             if ($reaction->getMessage() === $this) {
                 $reaction->setMessage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, File>
+     */
+    public function getFiles(): Collection
+    {
+        return $this->files;
+    }
+
+    public function addFile(File $file): static
+    {
+        if (!$this->files->contains($file)) {
+            $this->files->add($file);
+            $file->setMessage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFile(File $file): static
+    {
+        if ($this->files->removeElement($file)) {
+            // set the owning side to null (unless already changed)
+            if ($file->getMessage() === $this) {
+                $file->setMessage(null);
             }
         }
 

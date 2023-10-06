@@ -100,9 +100,7 @@ class UserController extends AbstractController
 
         $user->setSettings($settingService->fetchSettings($user));
         
-
-
-        $mercure = JWT::generate(86400, [
+        $mercure = JWT::generateMercureJwt([
             "mercure" => [
                 "subscribe" => [
                     "http://localhost:3000/user/" . $user->getId(),
@@ -110,22 +108,10 @@ class UserController extends AbstractController
             ]
         ]);
 
-        $response = $this->responseService->ReturnSuccess([
+        return $this->responseService->ReturnSuccess([
+            "mercure" => $mercure,
             "user" => $user,
         ], ['groups' => 'user:read']);
-
-        $response->headers->setCookie(new Cookie(
-            'mercureAuthorization',
-            $mercure,
-            (new \DateTime())->add(new \DateInterval('PT2H')),
-            '/.well-know/mercure',
-            null,
-            false,
-            true,
-            false
-        ));
-
-        return $response;
 
     }
 

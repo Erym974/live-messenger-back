@@ -47,7 +47,16 @@ class AuthController extends AbstractController
             "email" => $user->getEmail(),
         ]);
 
+        $mercure = JWT::generateMercureJwt([
+            "mercure" => [
+                "subscribe" => [
+                    "http://localhost:3000/user/" . $user->getId(),
+                ],
+            ]
+        ]);
+
         return $this->responseService->ReturnSuccess([
+            "mercure" => $mercure,
             "token" => $token,
             "user" => $user
         ], ['groups' => 'user:read']);
