@@ -34,10 +34,19 @@ class InvitationService extends AbstractService {
             $user->addFriend($this->createFriendEntity($user, $user2, true));
             $user2->addFriend($this->createFriendEntity($user2, $user, true));
 
-            $group = GroupService::createGroup(null, [$user, $user2]);
+            $alreadyGroup = false;
+
+            foreach($user->getGroups() as $group) {
+                if($group->hasMember($user2) && $group->getMembers()->count() == 2) {
+                    $alreadyGroup = true;
+                    break;
+                }
+            }
+
+            if(!$alreadyGroup) $group = GroupService::createGroup(null, [$user, $user2]);
 
             $this->removeInvitation($invitation);
-            $this->em->persist($group);
+            if($group) $this->em->persist($group);
             $this->em->persist($user);
             $this->em->persist($user2);
             $this->em->flush();

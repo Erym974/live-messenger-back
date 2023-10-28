@@ -66,11 +66,17 @@ class GroupsController extends AbstractController
         }
 
         $groups = $user->getGroups();
-
         
         foreach($groups as $group) {
             $group = $this->groupService->parseDatas($group);
         }
+
+        // sort group by date of last message 
+        $groups = $groups->toArray();
+        usort($groups, function($a, $b) {
+            return $a->getLastMessage()->getSendedAt() < $b->getLastMessage()->getSendedAt();
+        });
+        $groups = new ArrayCollection($groups);
 
         return $this->responseService->ReturnSuccess($groups, ['groups' => 'user:groups']);
 

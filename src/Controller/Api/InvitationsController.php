@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Service\InvitationService;
 use App\Service\InvitationsStatus;
 use App\Annotations\DocumentationAnnotation;
+use App\Service\RealtimeService;
 use App\Service\ResponseService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -15,12 +16,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[IsGranted('JWT_HEADER_ACCESS')]
 class InvitationsController extends AbstractController
 {
 
-    public function __construct(private EntityManagerInterface $em, private ResponseService $responseService)
+    public function __construct(private EntityManagerInterface $em, private ResponseService $responseService, private SerializerInterface $serializer, private RealtimeService $realtime)
     {
         
     }
@@ -81,6 +83,11 @@ class InvitationsController extends AbstractController
             $invitation = $invitationService->sendInvitation($user, $friend);
             if(!$invitation) return $this->responseService->ReturnError(500, "Can't send invitation");
 
+            $this->realtime->publish(
+                "user/" . $friend->getId() . "/invitations/received",
+                $this->serializer->serialize($invitation, 'json', ['groups' => 'invitation:read']),
+            );
+
             return $this->responseService->ReturnSuccess($invitation, ['groups' => 'invitation:read']);
 
         }
@@ -110,27 +117,34 @@ class InvitationsController extends AbstractController
 
             if(($invitation->getEmitter() != $user && $invitation->getReceiver() != $user) && !$user->hasRole('ROLE_ADMIN')) return $this->responseService->ReturnError(400, "You're not the emitter or the receiver");
             
-            $friend = $invitation->getEmitter();   
+            $friend = $invitation->getEmitter();  
+            $inviteId =  $invitation->getId();
 
             if($invitationService->acceptInvitation($invitation)) {
 
                 $friendEntity = $user->getFriend($friend);
 
                 if($friendEntity != null) {
-                    $friendEntity = [
+                    $friendData = [
                         "id" => $friendEntity->getId(),
+                        "friend" => $friend,
+                        "since" => $friendEntity->getSince()
+                    ];
+
+                    $userData = [
+                        "id" => $friendEntity->getId(),
+                        "invitation" => $inviteId,
+                        "friend" => $user,
                         "since" => $friendEntity->getSince()
                     ];
                 }
 
-                return $this->responseService->ReturnSuccess([
-                    "user" => $friend,
-                    "relationship" => $friendEntity,
-                    "invitation" => null,
-                ], ['groups' => 'user:friend']);
+                $this->realtime->publish(
+                    "user/" . $friend->getId() . "/invitations/accepted",
+                    $this->serializer->serialize($userData, 'json', ['groups' => 'user:friend']),
+                );
 
-                $friend = $user->getFriend($friend);
-                return $this->responseService->ReturnSuccess($friend, ['groups' => 'user:friend']);
+                return $this->responseService->ReturnSuccess($friendData, ['groups' => 'user:friend']);
             } else {
                 return $this->responseService->ReturnError(500, "Can't accept invitation");
             }

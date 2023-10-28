@@ -33,8 +33,8 @@ class FriendsController extends AbstractController
             case 'DELETE':
 
                 $params = json_decode($request->getContent(), true);
-                if(!isset($params['friends'])) return $this->responseService->ReturnError(400, "Friends not found");
-                $friend = $this->em->getRepository(Friend::class)->find($params['friends']);
+                if(!isset($params['friend'])) return $this->responseService->ReturnError(400, "Friends not found");
+                $friend = $this->em->getRepository(Friend::class)->find($params['friend']);
                 if($friend == null) return $this->responseService->ReturnError(404, "Friend not found");
 
                 if($friend->getUser() != $user) return $this->responseService->ReturnError(400, "You're not the friend");

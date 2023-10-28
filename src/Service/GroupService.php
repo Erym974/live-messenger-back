@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Group;
+use App\Entity\User;
 use App\Service\AbstractService;
 
 class GroupService extends AbstractService {
@@ -14,11 +15,12 @@ class GroupService extends AbstractService {
         return $group;
     }
 
-    public function parseDatas(Group $group) : Group
+    public function parseDatas(Group $group, ?User $user = null) : Group
     {
 
         /** @var User */
-        $user = $this->getUser();
+        if(!$user) $user = $this->getUser();
+
         if($group->getName() == null){
             if($group->getMembers()->count() > 2) {
                 $index = 0;

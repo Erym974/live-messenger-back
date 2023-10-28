@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Group;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Service\AbstractService;
@@ -23,26 +24,72 @@ class RealtimeService extends AbstractService {
      * @param string $message Message error
      * 
      */
-    public function publish(string $topic, mixed $datas, Collection $targets) : null
+    public function publish($topic, string $datas) : null
     {
-        
-        $front = $_ENV['FRONTEND_URL'];
-        if(substr($topic, 0, 1) != "/") $topic = "/" . $topic;
-        $final_url = $front . $topic;
+        $realtime = $_ENV['REALTIME_METHOD'];
 
-        // $finalTargets = [];
-        
-        // foreach($targets as $target){
-        //     array_push($finalTargets, $front . "/users/" . $target->getId());
-        // }
+        if($realtime != "MERCURE" && $realtime != "SOCKET") return null;
 
-        $this->bus->dispatch(new Update(
-            $final_url,
-            $datas,
-        ));
+        if($realtime === "MERCURE") {
 
-        return null;
+            $front = $_ENV['FRONTEND_URL'];
 
+            $topics = [];
+
+            // if topic is an array
+            if(is_array($topic)) {
+                foreach($topic as $t) {
+                    if(substr($t, 0, 1) != "/") $t = "/" . $t;
+                    $topics[] = $front . $t;
+                }
+                $topic = $topics;
+            } else {
+                if(substr($topic, 0, 1) != "/") $topic = "/" . $topic;
+                $topics[] = $front . $topic;
+            }
+
+            $update = new Update(
+                $topics,
+                $datas,
+                false
+            );
+            $this->bus->dispatch($update);
+            return null;
+
+        }
+
+        if($realtime === "SOCKET") {
+            
+        }
+
+    }
+
+    public function getTopicsGroupUpdate(string $type, Group $group, ?User $user = null) : array
+    {
+        $topics = [];
+        foreach($group->getMembers() as $member) {
+            if($user && ($member->getId() != $user->getId())) {
+                $topics[] = "user/" . $member->getId() . "/messenger/" . $group->getId() . "/" . $type;
+            } else {
+                $topics[] = "user/" . $member->getId() . "/messenger/" . $group->getId() . "/" . $type;
+            }
+
+        }
+        return $topics;
+    }
+
+    public function getTopicsAsideNewMessage(Group $group, ?User $user = null) : array
+    {
+        $topics = [];
+        foreach($group->getMembers() as $member) {
+            if($user && ($member->getId() != $user->getId())) {
+                $topics[] = "user/" . $member->getId() . "/new-message";
+            } else {
+                $topics[] = "user/" . $member->getId() . "/new-message";
+            }
+
+        }
+        return $topics;
     }
 
 }

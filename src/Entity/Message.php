@@ -49,7 +49,12 @@ class Message
     private Collection $reactions;
 
     #[ORM\OneToMany(mappedBy: 'message', targetEntity: File::class)]
+    #[Groups(['messages:read', 'user:groups'])]
     private Collection $files;
+
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'messages')]
+    #[Groups(['messages:read'])]
+    private ?self $reply = null;
 
     public function __construct()
     {
@@ -180,6 +185,7 @@ class Message
      */
     public function getFiles(): Collection
     {
+        if($this->getStatus() === MessageStatus::DELETED) return new ArrayCollection();
         return $this->files;
     }
 
@@ -201,6 +207,19 @@ class Message
                 $file->setMessage(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getReply(): ?self
+    {
+        if($this->reply && $this->reply->getReply()) $this->reply->setReply(null);
+        return $this->reply;
+    }
+
+    public function setReply(?self $reply): static
+    {
+        $this->reply = $reply;
 
         return $this;
     }

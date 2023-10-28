@@ -99,11 +99,23 @@ class UserController extends AbstractController
         }
 
         $user->setSettings($settingService->fetchSettings($user));
+
+        $groups = $user->getGroups();
+        $groupsTopic = [];
+
+        foreach($groups as $group) {
+            $groupsTopic[] = "http://localhost:3000/user/" . $user->getId() . "/messenger/" . $group->getId() . "/new-message";
+            $groupsTopic[] = "http://localhost:3000/user/" . $user->getId() . "/messenger/" . $group->getId() . "/edit-message";
+        }
         
         $mercure = JWT::generateMercureJwt([
             "mercure" => [
                 "subscribe" => [
-                    "http://localhost:3000/user/" . $user->getId(),
+                    ...$groupsTopic,
+                    "http://localhost:3000/user/" . $user->getId() . "/notifications",
+                    "http://localhost:3000/user/" . $user->getId() . "/new-message",
+                    "http://localhost:3000/user/" . $user->getId() . "/invitations/received",
+                    "http://localhost:3000/user/" . $user->getId() . "/invitations/accepted",
                 ],
             ]
         ]);
