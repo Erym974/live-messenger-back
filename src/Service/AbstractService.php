@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class AbstractService
 {
@@ -23,6 +24,7 @@ class AbstractService
         protected EntityManagerInterface $em,
         private ParameterBagInterface $params,
         private SerializerInterface $serializer,
+        protected CacheInterface $cache,
     ){
         $this->request = $requestStack->getCurrentRequest();
 

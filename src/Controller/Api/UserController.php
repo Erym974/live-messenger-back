@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Friend;
 use App\Entity\Invitation;
 use App\Entity\User;
 use App\Service\JWT;
@@ -142,9 +143,21 @@ class UserController extends AbstractController
 
         // map friend to keep only since and id
         if($friend != null) {
+
+            $mutual = $this->em->getRepository(Friend::class)->getMutualFriends($me, $friend->getFriend());
+            $mutual = array_map(function($friend) {
+                return [
+                    'id' => $friend->getFriend()->getId(),
+                    'fullname' => $friend->getFriend()->getFullname(),
+                    'profilePicture' => $friend->getFriend()->getProfilePicture()
+                ];
+            }, $mutual);
+            $friend->setMutual($mutual);
+
             $friend = [
                 "id" => $friend->getId(),
-                "since" => $friend->getSince()
+                "since" => $friend->getSince(),
+                "mutual" => $friend->getMutual()
             ];
         }
 

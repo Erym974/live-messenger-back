@@ -12,6 +12,7 @@ class GroupService extends AbstractService {
         $group = new Group();
         $group->setName($name);
         $group->setMembers($members);
+        $group->setAdministrator($members[0]);
         return $group;
     }
 

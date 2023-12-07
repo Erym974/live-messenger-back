@@ -34,7 +34,7 @@ class ResponseService extends AbstractService {
      * @param array $groups Groups to serialize
      * 
      */
-    public function ReturnSuccess(mixed $datas = [], array $groups = [], $auth = false) : JsonResponse
+    public function ReturnSuccess(mixed $datas = [], array $groups = []) : JsonResponse
     {
         $response = $this->json(
             [
@@ -45,12 +45,6 @@ class ResponseService extends AbstractService {
             ['Content-Type' => "application/json"],
             $groups,
         );
-
-        // $authCookie = new Cookie('token', $datas['token'], time() + 3600 * 24 * 7, '/', null, null, true, true);
-        // $mercureCookie = new Cookie('mercure', $datas['mercure'], time() + 3600 * 24 * 7, '/', null, null, true, true);
-
-        // $response->headers->setCookie($authCookie);
-        // $response->headers->setCookie($mercureCookie);
 
         return $response;
     }

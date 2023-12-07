@@ -72,14 +72,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:user'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'members')]
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'members', fetch: "EAGER")]
     private Collection $groups;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Setting::class, orphanRemoval: true)]
     #[Groups(['user:read'])]
     private Collection $settings;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Friend::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Friend::class, orphanRemoval: true, fetch: "EAGER")]
     private Collection $friends;
 
     #[ORM\OneToMany(mappedBy: 'emitter', targetEntity: Invitation::class)]

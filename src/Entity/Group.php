@@ -15,19 +15,19 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:groups', 'group:read'])]
+    #[Groups(['user:groups', 'group:read', 'user:friend', 'user:profile'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100, nullable: true)]
     #[Groups(['user:groups', 'group:read'])]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'groups')]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'groups', fetch: "EAGER")]
     #[Groups(['user:groups', 'group:read'])]
     private Collection $members;
 
-    #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: Message::class, orphanRemoval: true)]
-    #[Groups(['group:read'])]
+    #[ORM\OneToMany(mappedBy: 'conversation', fetch: "EAGER", targetEntity: Message::class, orphanRemoval: true)]
+    // #[Groups(['group:read'])]
     private Collection $messages;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
@@ -41,6 +41,10 @@ class Group
     #[ORM\Column(length: 15, nullable: true)]
     #[Groups(['user:groups', 'group:read'])]
     private ?string $emoji = "👍";
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $administrator = null;
 
 
 
@@ -161,6 +165,18 @@ class Group
     public function setLastMessage(?Message $lastMessage): static
     {
         $this->lastMessage = $lastMessage;
+        return $this;
+    }
+
+    public function getAdministrator(): ?User
+    {
+        return $this->administrator;
+    }
+
+    public function setAdministrator(?User $administrator): static
+    {
+        $this->administrator = $administrator;
+
         return $this;
     }
 }

@@ -143,16 +143,22 @@ class MessagesController extends AbstractController
 
         // if limit exist in query
         if($request->query->get('limit')) {
-            $limit = $request->query->get('limit');
+            $limit = intval($request->query->get('limit'));
         } else {
-            $limit = 50;
+            $limit = 10;
         }
 
-        $messages = $group->getMessages();
-
-        if(count($messages) > $limit) {
-            $messages = array_slice($messages->toArray(), count($messages) - $limit, $limit);
+        if($request->query->get('page')) {
+            $page = intval($request->query->get('page'));
+            if($page < 1) $page = 1;
+        } else {
+            $page = 1;
         }
+
+        $messages = $this->em->getRepository(Message::class)->findMessagesOfGroup($group, $limit, $page);
+        $total = $group->getMessages()->count();
+
+        $messages = array_reverse($messages);
 
         foreach($messages as $message) {
             foreach($message->getReactions() as $reaction) {
@@ -161,8 +167,9 @@ class MessagesController extends AbstractController
             }
         }
 
-        return $this->responseService->ReturnSuccess($messages, ['groups' => 'messages:read']);
+        $maxPage = ceil($total / $limit);
 
+        return $this->responseService->ReturnSuccess(["total" => $total, 'size' => count($messages), 'pages' => $maxPage, 'messages' => $messages], ['groups' => 'messages:read']);
     }
 
     #[Route('api/message', name: 'api.messages.message', methods: ['GET', 'PATCH'])]

@@ -27,32 +27,46 @@ class InvitationService extends AbstractService {
     public function acceptInvitation(Invitation $invitation) : bool
     {
 
+        
         try {
-            $user = $invitation->getEmitter();
-            $user2 = $invitation->getReceiver();
-    
-            $user->addFriend($this->createFriendEntity($user, $user2, true));
-            $user2->addFriend($this->createFriendEntity($user2, $user, true));
+            $emitter = $invitation->getEmitter();
+            $receiver = $invitation->getReceiver();
+            
+            
+            /** @var Friend */
+            $friend = $this->createFriendEntity($emitter, $receiver);
+            $emitter->addFriend($friend);
+            /** @var Friend */
+            $friend2 = $this->createFriendEntity($receiver, $emitter);
+            $receiver->addFriend($friend2);
 
-            $alreadyGroup = false;
+            /** @var ?Group */
+            $group = null;
 
-            foreach($user->getGroups() as $group) {
-                if($group->hasMember($user2) && $group->getMembers()->count() == 2) {
-                    $alreadyGroup = true;
+            foreach($emitter->getGroups() as $grp) {
+                if($grp && $grp->hasMember($receiver) && $grp->getMembers()->count() == 2) {
+                    $group = $grp;
                     break;
                 }
             }
 
-            if(!$alreadyGroup) $group = GroupService::createGroup(null, [$user, $user2]);
+            
+            if(!$group) $group = GroupService::createGroup(null, [$emitter, $receiver]);
+            
+            $this->em->persist($group);
+            $friend->setConversation($group);
+            $friend2->setConversation($group);
 
             $this->removeInvitation($invitation);
-            if($group) $this->em->persist($group);
-            $this->em->persist($user);
-            $this->em->persist($user2);
+            $this->em->persist($friend);
+            $this->em->persist($friend2);
+            $this->em->persist($emitter);
+            $this->em->persist($receiver);
             $this->em->flush();
 
             return true;
         } catch (\Throwable $th) {
+            dd($th->getMessage());
             return false;
         }
 
@@ -74,17 +88,15 @@ class InvitationService extends AbstractService {
         }
     }
 
-    private function createFriendEntity(User $user, User $user2, bool $save) : Friend
+    private function createFriendEntity(User $user, User $user2, bool $save = false) : Friend
     {
         $friend = new Friend();
         $friend->setUser($user);
         $friend->setFriend($user2);
-
         if($save) {
             $this->em->persist($friend);
             $this->em->flush();
         }
-
         return $friend;
     }
 
