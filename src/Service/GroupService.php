@@ -37,6 +37,10 @@ class GroupService extends AbstractService {
                     if($group->getPicture() === null) $group->setPicture($group->getMembers()[0]->getProfilePicture());
                 }
             }
+        } else {
+
+            if($group->getPicture() === null) $group->setPicture("https://ui-avatars.com/api/?name=" . str_replace(' ', '+', $group->getName()[0]) . "");
+
         }
 
         return $group;

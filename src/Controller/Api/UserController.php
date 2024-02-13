@@ -109,8 +109,8 @@ class UserController extends AbstractController
 
     }
 
-    #[Route('api/users/{user?}', name: 'api.users', methods: ['GET'])]
-    public function users(?User $user, SettingService $settingService, SerializerInterface $serialize): JsonResponse
+    #[Route('api/users/{user}', name: 'api.users', methods: ['GET'])]
+    public function users(User $user, SettingService $settingService, SerializerInterface $serialize): JsonResponse
     {
 
         if(!$user) return $this->responseService->ReturnError(400, "Missing parameters");

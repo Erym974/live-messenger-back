@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
+#[ORM\EntityListeners(['App\EntityListener\GroupListener'])]
 #[ORM\Table(name: '`group`')]
 class Group
 {
@@ -45,6 +46,12 @@ class Group
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $administrator = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $lastActivity = null;
 
 
 
@@ -176,6 +183,30 @@ class Group
     public function setAdministrator(?User $administrator): static
     {
         $this->administrator = $administrator;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getLastActivity(): ?\DateTimeImmutable
+    {
+        return $this->lastActivity;
+    }
+
+    public function setLastActivity(\DateTimeImmutable $lastActivity): static
+    {
+        $this->lastActivity = $lastActivity;
 
         return $this;
     }
