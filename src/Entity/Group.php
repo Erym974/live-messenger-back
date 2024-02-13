@@ -15,7 +15,7 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:groups', 'group:read', 'user:friend', 'user:profile'])]
+    #[Groups(['user:groups', 'group:read', 'user:friend', 'user:profile', 'messages:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100, nullable: true)]

@@ -38,6 +38,7 @@ class Message
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['messages:read'])]
     private ?Group $conversation = null;
 
     #[ORM\Column(nullable: true)]
@@ -115,6 +116,11 @@ class Message
         $this->status = $status;
 
         return $this;
+    }
+
+    public function getConversation(): ?Group
+    {
+        return $this->getGroup();
     }
 
     public function getGroup(): ?Group

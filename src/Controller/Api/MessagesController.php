@@ -51,6 +51,7 @@ class MessagesController extends AbstractController
             if(!$group->hasMember($user)) return $this->responseService->ReturnError(403, "You are not a member of this group");
             if(strlen($parameters['message']) > 300) return $this->responseService->ReturnError(400, "Message is too long");
 
+            // Initialize message
             $message = new Message();
             $message->setSender($user);
             if($parameters['message'] === ":emoji:") $message->setContent($group->getEmoji());
@@ -117,20 +118,9 @@ class MessagesController extends AbstractController
             if(isset($dedicatedMessage) && $dedicatedMessage) $responseMessages[] = $filesMessage;
 
             foreach($responseMessages as $responseMessage) {
-                $this->realtime->publish(
-                    $this->realtime->getTopicsGroupUpdate("new-message", $group),
-                    $this->serializer->serialize($responseMessage, 'json', ['groups' => 'messages:read']),
-                );
-
                 foreach($group->getMembers() as $member) {
                     if($member->getId() != $user->getId()) {
-
                         $group = $this->groupService->parseDatas($group, $member);
-
-                        $this->realtime->publish(
-                            "user/" . $member->getId() . "/new-message",
-                            $this->serializer->serialize($group, 'json', ['groups' => 'user:groups']),
-                        );
                     }
                 }
             }
@@ -225,10 +215,6 @@ class MessagesController extends AbstractController
         /** @var Group */
         $group = $message->getGroup();
 
-        $this->realtime->publish(
-            $this->realtime->getTopicsGroupUpdate("edit-message", $group, null),
-            $this->serializer->serialize($message, 'json', ['groups' => 'messages:read']),
-        );
         return $this->responseService->ReturnSuccess($message, ['groups' => 'messages:read']);
 
     }

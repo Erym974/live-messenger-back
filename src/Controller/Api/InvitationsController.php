@@ -83,10 +83,10 @@ class InvitationsController extends AbstractController
             $invitation = $invitationService->sendInvitation($user, $friend);
             if(!$invitation) return $this->responseService->ReturnError(500, "Can't send invitation");
 
-            $this->realtime->publish(
-                "user/" . $friend->getId() . "/invitations/received",
-                $this->serializer->serialize($invitation, 'json', ['groups' => 'invitation:read']),
-            );
+            // $this->realtime->publish(
+            //     "user/" . $friend->getId() . "/invitations/received",
+            //     $this->serializer->serialize($invitation, 'json', ['groups' => 'invitation:read']),
+            // );
 
             return $this->responseService->ReturnSuccess($invitation, ['groups' => 'invitation:read']);
 
@@ -139,10 +139,10 @@ class InvitationsController extends AbstractController
                     ];
                 }
 
-                $this->realtime->publish(
-                    "user/" . $friend->getId() . "/invitations/accepted",
-                    $this->serializer->serialize($userData, 'json', ['groups' => 'user:friend']),
-                );
+                // $this->realtime->publish(
+                //     "user/" . $friend->getId() . "/invitations/accepted",
+                //     $this->serializer->serialize($userData, 'json', ['groups' => 'user:friend']),
+                // );
 
                 return $this->responseService->ReturnSuccess($friendData, ['groups' => 'user:friend']);
             } else {

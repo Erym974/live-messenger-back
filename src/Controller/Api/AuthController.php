@@ -21,7 +21,7 @@ class AuthController extends AbstractController
         
     }
 
-    #[Route('auth/login', name: 'api.auth.login', methods: ['POST'])]
+    #[Route('api/auth/login', name: 'api.auth.login', methods: ['POST'])]
     public function login(Request $request): JsonResponse
     {
 
@@ -47,22 +47,13 @@ class AuthController extends AbstractController
             "email" => $user->getEmail(),
         ]);
 
-        $mercure = JWT::generateMercureJwt([
-            "mercure" => [
-                "subscribe" => [
-                    "http://localhost:3000/user/" . $user->getId(),
-                ],
-            ]
-        ]);
-
         return $this->responseService->ReturnSuccess([
-            "mercure" => $mercure,
             "token" => $token,
             "user" => $user
         ], ['groups' => 'user:read']);
     }
 
-    #[Route('auth/register', name: 'api.auth.register', methods: ['POST'])]
+    #[Route('api/auth/register', name: 'api.auth.register', methods: ['POST'])]
     public function register(Request $request): JsonResponse
     {
 
@@ -117,7 +108,7 @@ class AuthController extends AbstractController
         return $this->responseService->ReturnSuccess($user->getId());
     }
 
-    #[Route('auth/refresh', name: 'api.auth.refresh', methods: ['POST'])]
+    #[Route('api/auth/refresh', name: 'api.auth.refresh', methods: ['POST'])]
     public function refresh(Request $request): JsonResponse
     {
 

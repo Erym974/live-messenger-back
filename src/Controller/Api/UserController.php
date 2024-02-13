@@ -33,6 +33,7 @@ class UserController extends AbstractController
         /** @var User */
         $user = $this->getUser();
 
+        // If we edit the user data
         if($request->getMethod() == "PATCH") {
 
             $params = json_decode($request->getContent(), true);
@@ -63,6 +64,7 @@ class UserController extends AbstractController
 
         }
 
+        // If we edit file of user
         if($request->getMethod() == "POST") {
 
             $params = json_decode($request->getContent(), true);
@@ -101,28 +103,7 @@ class UserController extends AbstractController
 
         $user->setSettings($settingService->fetchSettings($user));
 
-        $groups = $user->getGroups();
-        $groupsTopic = [];
-
-        foreach($groups as $group) {
-            $groupsTopic[] = "http://localhost:3000/user/" . $user->getId() . "/messenger/" . $group->getId() . "/new-message";
-            $groupsTopic[] = "http://localhost:3000/user/" . $user->getId() . "/messenger/" . $group->getId() . "/edit-message";
-        }
-        
-        $mercure = JWT::generateMercureJwt([
-            "mercure" => [
-                "subscribe" => [
-                    ...$groupsTopic,
-                    "http://localhost:3000/user/" . $user->getId() . "/notifications",
-                    "http://localhost:3000/user/" . $user->getId() . "/new-message",
-                    "http://localhost:3000/user/" . $user->getId() . "/invitations/received",
-                    "http://localhost:3000/user/" . $user->getId() . "/invitations/accepted",
-                ],
-            ]
-        ]);
-
         return $this->responseService->ReturnSuccess([
-            "mercure" => $mercure,
             "user" => $user,
         ], ['groups' => 'user:read']);
 
