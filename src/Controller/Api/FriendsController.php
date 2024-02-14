@@ -61,7 +61,6 @@ class FriendsController extends AbstractController
                 } else {
                     $result = $user->getFriends();
                 }
-
                 break;
         }
 

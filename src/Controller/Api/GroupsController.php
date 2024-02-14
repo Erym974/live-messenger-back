@@ -35,6 +35,8 @@ class GroupsController extends AbstractController
 
             $params = json_decode($request->getContent(), true);
 
+            if($group->isPrivate()) return $this->responseService->ReturnError(403, "You can't edit a private group");
+
             $action = $params['action'];
             if(!$action) return $this->responseService->ReturnError(404, "Action not found");
 

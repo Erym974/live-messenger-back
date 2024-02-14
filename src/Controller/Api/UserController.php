@@ -138,7 +138,8 @@ class UserController extends AbstractController
             $friend = [
                 "id" => $friend->getId(),
                 "since" => $friend->getSince(),
-                "mutual" => $friend->getMutual()
+                "mutual" => $friend->getMutual(),
+                "group" => $friend->getConversation()->getId()
             ];
         }
 
