@@ -38,12 +38,14 @@ class InvitationsController extends AbstractController
             if(!isset($parameters['code'])) return $this->responseService->ReturnError(404, "Code not found");
         
             $code = $parameters['code'];
-
+            /** @var User */
             $friend = $this->em->getRepository(User::class)->findOneBy(['friendCode' => $code]);
 
             if($friend == null) return $this->responseService->ReturnError(404, "User not found");
 
             if($friend === $user) return $this->responseService->ReturnError(400, "Yourself");
+
+            if($friend->getSetting('allow-friend-request') != "true") return $this->responseService->ReturnError(400, "User doesn't allow friend request");
 
             /** @var Invitation */
             $invitation = $this->em->getRepository(Invitation::class)->findInvitation($user, $friend);

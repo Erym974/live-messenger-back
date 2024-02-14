@@ -316,6 +316,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Setting>
      */
+    public function getSetting(string $key): ?Setting
+    {
+        foreach($this->settings as $setting) {
+            if($setting->getMeta()->getName() == $key) return $setting;
+        }
+        return null;
+    }
+
+    /**
+     * @return Collection<int, Setting>
+     */
     public function getSettings(): Collection
     {
         return $this->settings;
