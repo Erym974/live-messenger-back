@@ -45,6 +45,7 @@ class Group
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user:groups', 'group:read'])]
     private ?User $administrator = null;
 
     #[ORM\Column]
@@ -55,6 +56,7 @@ class Group
 
     #[ORM\Column]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user:groups', 'group:read'])]
     private ?bool $private = false;
 
 
@@ -112,7 +114,7 @@ class Group
     public function removeMember(User $member): static
     {
         $this->members->removeElement($member);
-
+        $this->members = new ArrayCollection($this->members->getValues());
         return $this;
     }
 

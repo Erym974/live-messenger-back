@@ -24,6 +24,69 @@ class GroupsController extends AbstractController
         
     }
 
+    #[Route('api/members/{group}', name: 'api.members', methods: ['POST'])]
+    public function members(?Group $group, Request $request): JsonResponse
+    {
+
+        /** @var User */
+        $user = $this->getUser();
+
+        if($request->getMethod() == 'POST') {
+
+            $params = json_decode($request->getContent(), true);
+
+            $action = $params['action'];
+            if(!$action) return $this->responseService->ReturnError(404, "Action not found");
+
+            if(in_array($action, ['promote', 'kick', 'add'])) {
+                if($group->getAdministrator() != $user) return $this->responseService->ReturnError(403, "You are not the administrator of this group");
+            }
+
+            /** Si ce n'est pas une d'action d'ajout dans le groupe */
+            if($action != 'add') {
+                $member = $params['member'] ?? 0;
+                /** @var User */
+                $member = $this->em->getRepository(User::class)->find($member);
+                if(!$member) return $this->responseService->ReturnError(404, "Member not found");
+                if(!$group->hasMember($member)) return $this->responseService->ReturnError(404, "Member not found in this group");
+            }
+
+            /** Si c'est pour ajouter des membres */
+            if($action == 'add') {
+                $members = $params['members'] ?? null;
+                if(!$members) return $this->responseService->ReturnError(404, "Members not found");
+                foreach($members as $member) {
+                    $memberEntity = $this->em->getRepository(User::class)->find($member);
+                    if(!$memberEntity) continue;
+                    if($group->hasMember($member)) continue;
+
+                    $group->addMember($memberEntity);
+                }
+            }
+
+            switch($action) {
+                case 'kick':
+                    $group->removeMember($member);
+                    break;
+                case 'promote':
+                    $group->setAdministrator($member);
+                    break;
+                default:
+                    break;
+            }
+
+            $this->em->persist($group);
+            $this->em->flush();
+            
+            $this->groupService->parseDatas($group);
+            return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
+
+        }
+
+        return $this->responseService->ReturnError(404, "Group not found");
+
+    }
+
     #[Route('api/groups/{group?}', name: 'api.groups', methods: ['GET', 'POST'])]
     public function groups(?Group $group, Request $request): JsonResponse
     {
@@ -33,7 +96,6 @@ class GroupsController extends AbstractController
 
         if($request->getMethod() == 'POST') {
 
-            
             $params = json_decode($request->getContent(), true);
             $members = $params['members'] ?? null;
             $name = $params['name'] ?? null;
