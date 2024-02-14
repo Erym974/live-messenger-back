@@ -8,14 +8,6 @@ use App\Service\AbstractService;
 
 class GroupService extends AbstractService {
 
-    static function createGroup($name, $members) {
-        $group = new Group();
-        $group->setName($name);
-        $group->setMembers($members);
-        $group->setAdministrator($members[0]);
-        return $group;
-    }
-
     public function parseDatas(Group $group, ?User $user = null) : Group
     {
 
@@ -38,11 +30,8 @@ class GroupService extends AbstractService {
                 }
             }
         } else {
-
             if($group->getPicture() === null) $group->setPicture("https://ui-avatars.com/api/?name=" . str_replace(' ', '+', $group->getName()[0]) . "");
-
         }
-
         return $group;
     }
 

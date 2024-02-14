@@ -2,6 +2,8 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Group;
+use App\Entity\User;
 use App\Service\ResponseService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,8 +22,10 @@ class TestController extends AbstractController
     #[Route('api/test', name: 'api.test', methods: ['GET', 'POST', 'PATCH', 'DELETE'])]
     public function test(Request $request): JsonResponse
     {
-        $method = $request->getMethod();
-        return $this->responseService->ReturnSuccess("Method $method works");
+        $user = $this->getUser();
+        $user2 = $this->em->getRepository(User::class)->find(2);
+        $group = $this->em->getRepository(Group::class)->findPrivateGroup($user, $user2);
+        dd($group);
     }
 
 }

@@ -53,6 +53,10 @@ class Group
     #[ORM\Column]
     private ?\DateTimeImmutable $lastActivity = null;
 
+    #[ORM\Column]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?bool $private = false;
+
 
 
     public function __construct()
@@ -207,6 +211,18 @@ class Group
     public function setLastActivity(\DateTimeImmutable $lastActivity): static
     {
         $this->lastActivity = $lastActivity;
+
+        return $this;
+    }
+
+    public function isPrivate(): ?bool
+    {
+        return $this->private;
+    }
+
+    public function setPrivate(bool $private): static
+    {
+        $this->private = $private;
 
         return $this;
     }

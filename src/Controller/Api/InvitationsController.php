@@ -7,8 +7,6 @@ use App\Entity\Invitation;
 use App\Entity\User;
 use App\Service\InvitationService;
 use App\Service\InvitationsStatus;
-use App\Annotations\DocumentationAnnotation;
-use App\Service\RealtimeService;
 use App\Service\ResponseService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -22,7 +20,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class InvitationsController extends AbstractController
 {
 
-    public function __construct(private EntityManagerInterface $em, private ResponseService $responseService, private SerializerInterface $serializer, private RealtimeService $realtime)
+    public function __construct(private EntityManagerInterface $em, private ResponseService $responseService, private SerializerInterface $serializer)
     {
         
     }
@@ -83,11 +81,6 @@ class InvitationsController extends AbstractController
             $invitation = $invitationService->sendInvitation($user, $friend);
             if(!$invitation) return $this->responseService->ReturnError(500, "Can't send invitation");
 
-            // $this->realtime->publish(
-            //     "user/" . $friend->getId() . "/invitations/received",
-            //     $this->serializer->serialize($invitation, 'json', ['groups' => 'invitation:read']),
-            // );
-
             return $this->responseService->ReturnSuccess($invitation, ['groups' => 'invitation:read']);
 
         }
@@ -138,11 +131,6 @@ class InvitationsController extends AbstractController
                         "since" => $friendEntity->getSince()
                     ];
                 }
-
-                // $this->realtime->publish(
-                //     "user/" . $friend->getId() . "/invitations/accepted",
-                //     $this->serializer->serialize($userData, 'json', ['groups' => 'user:friend']),
-                // );
 
                 return $this->responseService->ReturnSuccess($friendData, ['groups' => 'user:friend']);
             } else {

@@ -10,7 +10,6 @@ use App\Entity\User;
 use App\Service\GroupService;
 use App\Service\MessageService;
 use App\Service\MessageStatus;
-use App\Service\RealtimeService;
 use App\Service\ResponseService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +25,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class MessagesController extends AbstractController
 {
 
-    public function __construct(private GroupService $groupService, private RealtimeService $realtime, private SerializerInterface $serializer, private EntityManagerInterface $em, private UserPasswordHasherInterface $hasher, private ResponseService $responseService)
+    public function __construct(private GroupService $groupService, private SerializerInterface $serializer, private EntityManagerInterface $em, private UserPasswordHasherInterface $hasher, private ResponseService $responseService)
     {
         
     }

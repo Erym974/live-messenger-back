@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Friend;
+use App\Entity\Group;
 use App\Entity\Invitation;
 use App\Entity\User;
 use App\Service\AbstractService;
@@ -32,34 +33,36 @@ class InvitationService extends AbstractService {
             $emitter = $invitation->getEmitter();
             $receiver = $invitation->getReceiver();
             
-            
             /** @var Friend */
-            $friend = $this->createFriendEntity($emitter, $receiver);
-            $emitter->addFriend($friend);
+            $friend_emitter = $this->createFriendEntity($emitter, $receiver);
+            $emitter->addFriend($friend_emitter);
+
             /** @var Friend */
-            $friend2 = $this->createFriendEntity($receiver, $emitter);
-            $receiver->addFriend($friend2);
+            $friend_receiver = $this->createFriendEntity($receiver, $emitter);
+            $receiver->addFriend($friend_receiver);
 
             /** @var ?Group */
             $group = null;
 
-            foreach($emitter->getGroups() as $grp) {
-                if($grp && $grp->hasMember($receiver) && $grp->getMembers()->count() == 2) {
-                    $group = $grp;
-                    break;
-                }
+            $groupe = $this->em->getRepository(Group::class)->findPrivateGroup($emitter, $receiver);
+
+            
+            if(!$group) {
+                $group = new Group();
+                $group->addMember($emitter);
+                $group->addMember($receiver);
+                $group->setAdministrator($emitter);
+                $group->setPrivate(true);
+                $this->em->persist($group);
             }
 
-            
-            if(!$group) $group = GroupService::createGroup(null, [$emitter, $receiver]);
-            
-            $this->em->persist($group);
-            $friend->setConversation($group);
-            $friend2->setConversation($group);
+
+            $friend_emitter->setConversation($group);
+            $friend_receiver->setConversation($group);
 
             $this->removeInvitation($invitation);
-            $this->em->persist($friend);
-            $this->em->persist($friend2);
+            $this->em->persist($friend_emitter);
+            $this->em->persist($friend_receiver);
             $this->em->persist($emitter);
             $this->em->persist($receiver);
             $this->em->flush();
