@@ -28,13 +28,14 @@ class FriendRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('f')
             ->where('(f.user = :friend AND f.friend != :user)')
-            ->andWhere('(f.user = :user AND f.friend != :friend)')
+            // ->andWhere('(f.user = :user AND f.friend != :friend)')
             ->setParameter('user', $user)
             ->setParameter('friend', $friend)
             ->getQuery()
             ->getResult()
         ;
     }
+
 
 //    /**
 //     * @return Friend[] Returns an array of Friend objects

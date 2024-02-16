@@ -28,6 +28,14 @@ class Friend
     #[Groups(['user:friend', 'user:profile'])]
     private ?\DateTimeImmutable $since = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user:friend', 'user:profile'])]
+    private ?Group $conversation = null;
+
+    #[Groups(['user:friend', 'user:profile'])]
+    private array $mutual = [];
+
     public function __construct()
     {
         $this->since = new \DateTimeImmutable();
@@ -76,6 +84,29 @@ class Friend
     {
         $this->since = $since;
 
+        return $this;
+    }
+
+    public function getConversation(): ?Group
+    {
+        return $this->conversation;
+    }
+
+    public function setConversation(?Group $conversation): static
+    {
+        $this->conversation = $conversation;
+
+        return $this;
+    }
+
+    public function getMutual(): ?array
+    {
+        return $this->mutual;
+    }
+
+    public function setMutual(array $mutual): static
+    {
+        $this->mutual = $mutual;
         return $this;
     }
 }

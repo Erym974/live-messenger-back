@@ -1,0 +1,16 @@
+{% extends 'dashboard.html.twig' %}
+
+
+{% block title %}Documentations{% endblock %}
+
+{% block body %}
+<section id="documentations">
+
+        <div class="container mt-3">
+            {% for data in datas %}
+                {% include './components/documentations/_block.html.twig' with { data } %}
+            {% endfor %}
+        </div>
+
+</section>
+{% endblock %}

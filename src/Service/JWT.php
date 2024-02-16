@@ -7,10 +7,6 @@ use App\Service\AbstractService;
 use DateTime;
 
 class JWT extends AbstractService {
-
-    public function __construct() {
-        $this->secret = $_ENV['JWT_SECRET'];
-    }
     
     static public function generate($validity = 7200, $payload = [], $header = ['typ' => 'JWT', 'alg' => 'HS256']) : string
     {

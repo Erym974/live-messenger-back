@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Service\AbstractService;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class ResponseService extends AbstractService {
 
@@ -35,7 +36,7 @@ class ResponseService extends AbstractService {
      */
     public function ReturnSuccess(mixed $datas = [], array $groups = []) : JsonResponse
     {
-        return $this->json(
+        $response = $this->json(
             [
                 "status" => true,
                 "datas" => $datas,
@@ -44,6 +45,8 @@ class ResponseService extends AbstractService {
             ['Content-Type' => "application/json"],
             $groups,
         );
+
+        return $response;
     }
 
 }
