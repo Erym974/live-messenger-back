@@ -44,7 +44,7 @@ class InvitationService extends AbstractService {
             /** @var ?Group */
             $group = null;
 
-            $groupe = $this->em->getRepository(Group::class)->findPrivateGroup($emitter, $receiver);
+            $group = $this->em->getRepository(Group::class)->findPrivateGroup($emitter, $receiver);
 
             
             if(!$group) {

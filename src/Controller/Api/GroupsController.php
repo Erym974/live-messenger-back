@@ -40,12 +40,12 @@ class GroupsController extends AbstractController
             $action = $params['action'];
             if(!$action) return $this->responseService->ReturnError(404, "Action not found");
 
-            if(in_array($action, ['promote', 'kick', 'add'])) {
+            if(in_array($action, ['promote', 'kick', 'add', 'delete'])) {
                 if($group->getAdministrator() != $user) return $this->responseService->ReturnError(403, "You are not the administrator of this group");
             }
 
             /** Si ce n'est pas une d'action d'ajout dans le groupe */
-            if($action != 'add') {
+            if($action != 'add' && $action != "delete" && $action != "leave") {
                 $member = $params['member'] ?? 0;
                 /** @var User */
                 $member = $this->em->getRepository(User::class)->find($member);
@@ -60,10 +60,15 @@ class GroupsController extends AbstractController
                 foreach($members as $member) {
                     $memberEntity = $this->em->getRepository(User::class)->find($member);
                     if(!$memberEntity) continue;
-                    if($group->hasMember($member)) continue;
+                    if($group->hasMember($memberEntity)) continue;
 
                     $group->addMember($memberEntity);
                 }
+            }
+
+            /** Si c'est pour quitter le groupe */
+            if($action == 'leave') {
+                if(!$group->hasMember($user)) return $this->responseService->ReturnError(404, "You are not a member of this group");    
             }
 
             switch($action) {
@@ -72,6 +77,14 @@ class GroupsController extends AbstractController
                     break;
                 case 'promote':
                     $group->setAdministrator($member);
+                    break;
+                case 'leave':
+                    $group->removeMember($user);
+                    break;
+                case 'delete':
+                    foreach($group->getMembers() as $member) {
+                        $group->removeMember($member);
+                    }
                     break;
                 default:
                     break;

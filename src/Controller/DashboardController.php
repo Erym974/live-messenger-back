@@ -39,24 +39,19 @@ class DashboardController extends AbstractController
 
     }
 
-    #[Route('/dashboard/documentations', name: 'admin.dashboard.documentations', methods: ['GET'])]
-    public function documentations() : Response
-    {
-        
-        $yaml = file_get_contents(__DIR__ . '/../../config/documentations.yaml');
-        $yaml = Yaml::parse($yaml);
-
-        return $this->render('dashboard/documentations.html.twig', [
-            'datas' => $yaml
-        ]);
-
-    }
-
     #[Route('/dashboard/reports', name: 'admin.dashboard.reports', methods: ['GET'])]
     public function reports() : Response
     {
 
         return $this->render('dashboard/reports.html.twig');
+
+    }
+
+    #[Route('/dashboard/settings', name: 'admin.dashboard.settings', methods: ['GET'])]
+    public function settings() : Response
+    {
+
+        return $this->render('dashboard/settings.html.twig');
 
     }
 

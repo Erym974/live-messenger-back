@@ -24,16 +24,19 @@
 					<li><a href="{{ path('admin.dashboard') }}" class="logo"><img src="/logo.jpg" alt=""><span class="nav-item">Dashboard</span></a></li>
 					<li><a href="{{ path('admin.dashboard') }}"><i class="fas fa-home"></i><span class="nav-item">Accueil</span></a></li>
 					<li><a href="{{ path('admin.dashboard.users') }}"><i class="fas fa-users"></i><span class="nav-item">Utilisateurs</span></a></li>
-					<li><a href="{{ path('admin.dashboard.documentations') }}"><i class="fas fa-layer-group"></i><span class="nav-item">Documentations</span></a></li>
 					<li><a href="{{ path('admin.dashboard.reports') }}"><i class="fas fa-flag"></i><span class="nav-item">Signalements</span></a></li>
 					<li><a href=""><i class="fas fa-cog"></i><span class="nav-item">Paramètres</span></a></li>
-					<li><a href="{{ path('auth.logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i><span class="nav-item">Deconnexion</span></a></li>
+				</ul>
+				<ul>
+					<li><a href="{{ path('auth.logout') }}"><i class="fas fa-sign-out-alt"></i><span class="nav-item">Deconnexion</span></a></li>
 				</ul>
 			</nav>
-			<section class="main"> 
+			<main> 
                 <h1 class="tab-title">{{ block('title') }}</h1>
-                {% block body %}{% endblock %}
-            </section>
+                <div class="content">
+					{% block body %}{% endblock %}
+				</div>
+            </main=>
         </div>
     </body>
 </html>
