@@ -21,150 +21,150 @@ class GroupsController extends AbstractController
 
     public function __construct(private EntityManagerInterface $em, private UserPasswordHasherInterface $hasher, private GroupService $groupService, private ResponseService $responseService)
     {
-        
     }
 
+    /** Modification des membres */
     #[Route('api/members/{group}', name: 'api.members', methods: ['POST'])]
-    public function members(?Group $group, Request $request): JsonResponse
+    public function members(Group $group, Request $request): JsonResponse
     {
 
         /** @var User */
         $user = $this->getUser();
 
-        if($request->getMethod() == 'POST') {
+        $params = json_decode($request->getContent(), true);
 
-            $params = json_decode($request->getContent(), true);
+        if ($group->isPrivate()) return $this->responseService->ReturnError(403, "You can't edit a private group");
 
-            if($group->isPrivate()) return $this->responseService->ReturnError(403, "You can't edit a private group");
+        $action = $params['action'];
+        if (!$action) return $this->responseService->ReturnError(404, "Action not found");
 
-            $action = $params['action'];
-            if(!$action) return $this->responseService->ReturnError(404, "Action not found");
-
-            if(in_array($action, ['promote', 'kick', 'add', 'delete'])) {
-                if($group->getAdministrator() != $user) return $this->responseService->ReturnError(403, "You are not the administrator of this group");
-            }
-
-            /** Si ce n'est pas une d'action d'ajout dans le groupe */
-            if($action != 'add' && $action != "delete" && $action != "leave") {
-                $member = $params['member'] ?? 0;
-                /** @var User */
-                $member = $this->em->getRepository(User::class)->find($member);
-                if(!$member) return $this->responseService->ReturnError(404, "Member not found");
-                if(!$group->hasMember($member)) return $this->responseService->ReturnError(404, "Member not found in this group");
-            }
-
-            /** Si c'est pour ajouter des membres */
-            if($action == 'add') {
-                $members = $params['members'] ?? null;
-                if(!$members) return $this->responseService->ReturnError(404, "Members not found");
-                foreach($members as $member) {
-                    $memberEntity = $this->em->getRepository(User::class)->find($member);
-                    if(!$memberEntity) continue;
-                    if($group->hasMember($memberEntity)) continue;
-
-                    $group->addMember($memberEntity);
-                }
-            }
-
-            /** Si c'est pour quitter le groupe */
-            if($action == 'leave') {
-                if(!$group->hasMember($user)) return $this->responseService->ReturnError(404, "You are not a member of this group");    
-            }
-
-            switch($action) {
-                case 'kick':
-                    $group->removeMember($member);
-                    break;
-                case 'promote':
-                    $group->setAdministrator($member);
-                    break;
-                case 'leave':
-                    $group->removeMember($user);
-                    break;
-                case 'delete':
-                    foreach($group->getMembers() as $member) {
-                        $group->removeMember($member);
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            $this->em->persist($group);
-            $this->em->flush();
-            
-            $this->groupService->parseDatas($group);
-            return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
-
+        if (in_array($action, ['promote', 'kick', 'add', 'delete'])) {
+            if ($group->getAdministrator() != $user) return $this->responseService->ReturnError(403, "You are not the administrator of this group");
         }
 
-        return $this->responseService->ReturnError(404, "Group not found");
+        /** Si ce n'est pas une d'action d'ajout dans le groupe */
+        if ($action != 'add' && $action != "delete" && $action != "leave") {
+            $member = $params['member'] ?? 0;
+            /** @var User */
+            $member = $this->em->getRepository(User::class)->find($member);
+            if (!$member) return $this->responseService->ReturnError(404, "Member not found");
+            if (!$group->hasMember($member)) return $this->responseService->ReturnError(404, "Member not found in this group");
+        }
 
-    }
-
-    #[Route('api/groups/{group?}', name: 'api.groups', methods: ['GET', 'POST'])]
-    public function groups(?Group $group, Request $request): JsonResponse
-    {
-
-        /** @var User */
-        $user = $this->getUser();
-
-        if($request->getMethod() == 'POST') {
-
-            $params = json_decode($request->getContent(), true);
+        /** Si c'est pour ajouter des membres */
+        if ($action == 'add') {
             $members = $params['members'] ?? null;
-            $name = $params['name'] ?? null;
-
-            // if name is string and is is more than 10 characters remove the leading
-            if($name != null && is_string($name) && strlen($name) > 10) {
-                $name = substr($name, 0, 10);
-            }
-            
-            
-            if(!$members) return $this->responseService->ReturnError(404, "Members not found");
-            if(count($members) < 2) return $this->responseService->ReturnError(400, "You need at least 2 members to create a group");
-            
-            
-            $group = new Group();
-            
-            $group->setName($name);
-            $group->addMember($user);
-            $group->setAdministrator($user);
-            foreach($members as $member) {
+            if (!$members) return $this->responseService->ReturnError(404, "Members not found");
+            foreach ($members as $member) {
                 $memberEntity = $this->em->getRepository(User::class)->find($member);
+                if (!$memberEntity) continue;
+                if ($group->hasMember($memberEntity)) continue;
+
                 $group->addMember($memberEntity);
             }
-
-            if(count($group->getMembers()) < 3) return $this->responseService->ReturnError(400, "You need at least 2 members to create a group");
-
-            $this->em->persist($group);
-            $this->em->flush();
-
-            return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
-
         }
 
-        if($request->getMethod() == 'GET' && $group) {
-            if(!$group->hasMember($user)) return $this->responseService->ReturnError(403, "You are not a member of this group");
-            $this->groupService->parseDatas($group);
-            return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
+        /** Si c'est pour quitter le groupe */
+        if ($action == 'leave') {
+            if (!$group->hasMember($user)) return $this->responseService->ReturnError(404, "You are not a member of this group");
         }
 
-        $groups = $user->getGroups();
-        
+        switch ($action) {
+            case 'kick':
+                $group->removeMember($member);
+                break;
+            case 'promote':
+                $group->setAdministrator($member);
+                break;
+            case 'leave':
+                $group->removeMember($user);
+                break;
+            case 'delete':
+                foreach ($group->getMembers() as $member) {
+                    $group->removeMember($member);
+                }
+                break;
+            default:
+                break;
+        }
+
+        $this->em->persist($group);
+        $this->em->flush();
+
+        $this->groupService->parseDatas($group);
+        return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
+
+
+        return $this->responseService->ReturnError(404, "Group not found");
+    }
+
+
+
+    /** Création d'un groupe */
+    #[Route('api/groups', name: 'api.groups.post', methods: ['POST'])]
+    public function groups_post(Request $request): JsonResponse
+    {
+        /** @var User */
+        $user = $this->getUser();
+
+        $params = json_decode($request->getContent(), true);
+        $members = $params['members'] ?? null;
+        $name = $params['name'] ?? null;
+
+        if ($name != null && is_string($name) && strlen($name) > 10) $name = substr($name, 0, 10);
+
+        if (!$members) return $this->responseService->ReturnError(404, "Members not found");
+        if (count($members) < 2) return $this->responseService->ReturnError(400, "You need at least 2 members to create a group");
+
+        $group = new Group();
+
+        $group->setName($name);
+        $group->addMember($user);
+        $group->setAdministrator($user);
+        foreach ($members as $member) {
+            $memberEntity = $this->em->getRepository(User::class)->find($member);
+            $group->addMember($memberEntity);
+        }
+
+        if (count($group->getMembers()) < 3) return $this->responseService->ReturnError(400, "You need at least 2 members to create a group");
+
+        // $this->em->persist($group);
+        // $this->em->flush();
+
+        return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
+    }
+
+    /** Récupération de tout les groupes */
+    #[Route('api/groups', name: 'api.groups.get', methods: ['GET'])]
+    public function groups_get(): JsonResponse
+    {
+        /** @var User */
+        $user = $this->getUser();
+
+        $groups = $user->getGroups()->toArray();
+
+        usort($groups, function ($a, $b) {
+            return $a->getLastActivity() < $b->getLastActivity();
+        });
+
         foreach($groups as $group) {
             $group = $this->groupService->parseDatas($group);
         }
 
-        // sort group by date of last message 
-        $groups = $groups->toArray();
-        usort($groups, function($a, $b) {
-            return $a->getLastActivity() < $b->getLastActivity();
-        });
         $groups = new ArrayCollection($groups);
 
         return $this->responseService->ReturnSuccess($groups, ['groups' => 'user:groups']);
-
     }
 
+    /** Récupération d'un groupe */
+    #[Route('api/groups/{group}', name: 'api.group.get', methods: ['GET'])]
+    public function group_get(Group $group, Request $request): JsonResponse
+    {
+        /** @var User */
+        $user = $this->getUser();
+
+        if (!$group->hasMember($user)) return $this->responseService->ReturnError(403, "You are not a member of this group");
+        $this->groupService->parseDatas($group);
+        return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
+    }
 }

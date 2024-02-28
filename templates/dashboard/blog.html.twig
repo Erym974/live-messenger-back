@@ -1,0 +1,60 @@
+{% extends 'dashboard.html.twig' %}
+
+
+{% block title %}Blog{% endblock %}
+{% block page_main_title %}Blog{% endblock %}
+
+{% block body %}
+
+	<section id="blog">
+		<header>
+			<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPost">{% trans %}Add new Post{% endtrans %}</button>
+
+			<div class="modal fade" id="createPost" tabindex="-1" aria-labelledby="createPostLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h2 class="modal-title" id="createPostLabel">{% trans %}Add new Job{% endtrans %}</h2>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							{{ form_start(form, {
+                                attr: {
+                                    'id': 'createPostForm'
+                                },
+                            }) }}
+                            {{ form_widget(form) }}
+							{{ form_end(form) }}
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Close{% endtrans %}</button>
+							<button type="submit" class="btn btn-primary" form="createPostForm">{% trans %}Publish post{% endtrans %}</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		{% include 'snippets/table.html.twig' ignore missing with {
+            "entity_name": "post",
+            'entities': posts,
+            'actions': {
+                "detail": {
+                    "icon": "visibility",
+                    'route': {
+                        "name": 'admin.dashboard.career',
+                        'arguments' : {
+                            'entity': 'id',
+                        }
+                    },
+                }
+            },
+            'params': {
+                'Reference': 'id',
+                'Title': 'title',
+                'Description': 'short_description'
+                },
+        } %}
+	</section>
+
+{% endblock %}

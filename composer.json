@@ -11,6 +11,7 @@
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.16",
+        "ehyiah/ux-quill": "^1.0",
         "lcobucci/jwt": "^4.0",
         "lexik/jwt-authentication-bundle": "^2.18",
         "nelmio/cors-bundle": "^2.3",
@@ -18,12 +19,15 @@
         "symfony/console": "6.1.*",
         "symfony/dotenv": "6.1.*",
         "symfony/flex": "^2",
+        "symfony/form": "6.1.*",
         "symfony/framework-bundle": "6.1.*",
         "symfony/mercure-bundle": "^0.3.7",
         "symfony/messenger": "6.1.*",
         "symfony/password-hasher": "6.1.*",
         "symfony/runtime": "6.1.*",
         "symfony/serializer": "6.1.*",
+        "symfony/stimulus-bundle": "^2.14",
+        "symfony/translation": "6.1.*",
         "symfony/twig-bundle": "6.1.*",
         "symfony/validator": "6.1.*",
         "symfony/webpack-encore-bundle": "^1.17",
@@ -31,7 +35,8 @@
         "vich/uploader-bundle": "^2.2"
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.50"
+        "symfony/maker-bundle": "^1.50",
+        "symfony/web-profiler-bundle": "6.1.*"
     },
     "config": {
         "allow-plugins": {

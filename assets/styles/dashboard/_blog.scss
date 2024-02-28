@@ -1,0 +1,10 @@
+section#blog {
+    width: 100%;
+    max-height: 80vh;
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-bottom: 40px;
+    }
+}

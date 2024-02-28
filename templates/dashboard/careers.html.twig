@@ -1,0 +1,85 @@
+{% extends 'dashboard.html.twig' %}
+
+
+{% block title %}{% trans %}Careers{% endtrans %}{% endblock %}
+{% block page_main_title %}{% trans %}Careers{% endtrans %}{% endblock %}
+
+{% block body %}
+
+	<section id="careers">
+		<header>
+			<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createJob">{% trans %}Add new Job{% endtrans %}</button>
+
+			<div class="modal fade" id="createJob" tabindex="-1" aria-labelledby="createJobLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h2 class="modal-title" id="createJobLabel">{% trans %}Add new Job{% endtrans %}</h2>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							{{ form_start(form, {
+                                attr: {
+                                    'id': 'createJobForm'
+                                },
+                            }) }}
+							{{ form_row(form.title) }}
+							{{ form_row(form.category) }}
+							{{ form_row(form.location) }}
+							{{ form_row(form.short_description) }}
+							{{ form_row(form.long_description) }}
+                            <div class="mb-3" data-requirement-form>
+                                <label for="requirement-fields-label" class="form-label">Requirements</label>
+                                <ul id="requirement-fields-list" class="p-0" data-prototype="{{ form_widget(form.requirements.vars.prototype)|e }}" data-index="{{ form.requirements|length }}">
+                                    {% for index, requirementField in form.requirements %}
+                                        <li class="list-group-item mb-2">
+                                            <div class="row">
+                                                {{ form_row(requirementField, {
+                                                    'row_attr': {
+                                                        'class': 'mb-0 col-md-10'
+                                                    }
+                                                
+                                                }) }}
+                                                <button type="button" class="btn btn-danger requirement-fields-remove col-md-2">{% trans %}Remove{% endtrans %}</button>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                <div class="df aic jce">
+                                    <button type="button" class="btn btn-secondary requirement-fields-add df aic jcc gap-2"><span class="material-icons-sharp">add</span>{% trans %}Add a requirement{% endtrans %}</button>
+                                </div>
+                            </div>
+							{{ form_end(form) }}
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Close{% endtrans %}</button>
+							<button type="submit" class="btn btn-primary" form="createJobForm">{% trans %}Save changes{% endtrans %}</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		{% include 'snippets/table.html.twig' ignore missing with {
+            "entity_name": "job",
+            'entities': jobs,
+            'actions': {
+                "detail": {
+                    "icon": "visibility",
+                    'route': {
+                        "name": 'admin.dashboard.career',
+                        'arguments' : {
+                            'entity': 'id',
+                        }
+                    },
+                }
+            },
+            'params': {
+                'Reference': 'id',
+                'Title': 'title',
+                'Location': 'location'
+                },
+        } %}
+	</section>
+
+{% endblock %}

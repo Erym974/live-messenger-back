@@ -126,6 +126,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * Get beautiful Role
+     */
+    public function getRole(): string
+    {
+        $roles = $this->roles;
+        foreach ($roles as $role) {
+            if(str_contains(strtolower($role),'admin')) return"Administrator";
+            if(str_contains(strtolower($role),'moderator')) return"Moderator";
+        }
+        return "User";
+    }
+
+    /**
      * @see UserInterface
      */
     public function getRoles(): array
@@ -144,8 +157,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function hasRole(string $role): bool
+    public function hasRole(string $role = "ROLE_USER"): bool
     {
+        // if($role == "ROLE_USER") return true;
         return in_array($role, $this->roles);
     }
 

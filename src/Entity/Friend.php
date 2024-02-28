@@ -48,7 +48,7 @@ class Friend
 
     public function hasUser(User $user): bool
     {
-        return $this->user === $user || $this->friend === $user;
+        return $this->user->getId() === $user->getId() || $this->friend->getId() === $user->getId();
     }
 
     public function getUser(): ?User

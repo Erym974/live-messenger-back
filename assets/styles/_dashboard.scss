@@ -1,0 +1,211 @@
+// * {
+//   margin: 0;
+//   padding: 0;
+//   outline: none;
+//   border: none;
+//   text-decoration: none;
+//   box-sizing: border-box;
+//   font-family: "Poppins", sans-serif;
+// }
+
+// body {
+//   // background: var(--color-background);
+//   background-color: red;
+//   overflow: hidden;
+
+//   .container {
+//     display: flex;
+
+//     nav {
+//       position: relative;
+//       display: flex;
+//       flex-direction: column;
+//       justify-content: space-between;
+//       height: 100vh;
+//       box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+//       width: 280px;
+
+//       .logo {
+//         text-align: center;
+//         display: flex;
+//         margin: 10px 0 0 10px;
+
+//         img {
+//           width: 45px;
+//           height: 45px;
+//           border-radius: 50%;
+//         }
+
+//         span {
+//           font-weight: bold;
+//           padding-left: 15px;
+//           font-size: 18px;
+//           text-transform: uppercase;
+//         }
+//       }
+
+//       a {
+//         position: relative;
+//         color: rgb(85, 83, 83);
+//         font-size: 14px;
+//         display: flex;
+//         width: 100%;
+//         padding: 10px;
+//         align-items: center;
+
+//         .fas {
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           width: 70px;
+//           height: 40px;
+//           font-size: 20px;
+//         }
+
+//         .nav-item {
+//           margin-left: 10px;
+//         }
+
+//         &:hover {
+//           background: #eee;
+//         }
+//       }
+
+//       @media screen and (max-width: 1140px) {
+//         width: 80px;
+//         a {
+//           .nav-item {
+//             display: none;
+//           }
+//         }
+//       }
+
+//     }
+
+//     main {
+//       position: relative;
+//       flex: 1;
+
+//       .tab-title {
+//         padding: 10px 20px;
+//         background-color: var(--light-color);
+//         box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+//       }
+
+//       .content {
+
+//         padding: 10px 20px;
+
+//         .main-skills {
+//           display: flex;
+//           margin-top: 20px;
+
+//           .card {
+//             width: 25%;
+//             margin: 10px;
+//             background: #fff;
+//             text-align: center;
+//             border-radius: 20px;
+//             padding: 10px;
+//             box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+
+//             h3 {
+//               margin: 10px;
+//               text-transform: capitalize;
+//             }
+
+//             p {
+//               font-size: 12px;
+//             }
+
+//             button {
+//               background: orangered;
+//               color: #fff;
+//               padding: 7px 15px;
+//               border-radius: 10px;
+//               margin-top: 15px;
+//               cursor: pointer;
+
+//               &:hover {
+//                 background: rgba(223, 70, 15, 0.856);
+//               }
+//             }
+
+//             i {
+//               font-size: 22px;
+//               padding: 10px;
+//             }
+//           }
+//         }
+
+//         .table {
+//           background-color: var(--light-color);
+//           // box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+//           width: 100%;
+//           text-align: center;
+//         }
+//       }
+
+//     }
+//   }
+// }
+
+@import "./dashboard/sidebar.scss";
+// @import "./dashboard/insigths.scss";
+
+.aside-container .top, .top-bar .top {
+    height: 5rem;
+    border-bottom: 1px solid var(--color-light);
+  }
+  .aside-container .top, .sidebar, .page_main_title {
+    padding-left: 40px;
+  }
+  .top-bar .top {
+    padding-right: 40px;
+  }
+  
+  .main-container {
+    display: flex;
+    width: 100%;
+    margin: 0 auto;
+    color: var(--color-dark);
+    background: var(--color-white);
+    span:not(.material-icons-sharp) {
+      color: var(--color-dark);
+    }
+    > main > .content {
+      background: var(--color-light);
+      padding: 40px;
+      gap: 1.8rem;
+      box-shadow: 1px -2px 5px var(--color-light-2) inset;
+      height: 100%;
+      @media screen and (max-width: 768px) {
+        padding: 15px 5px;
+      }
+  
+    }
+  }
+  
+  main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .content {
+  
+  }
+  
+  .content-left {
+    width: 70%;
+  }
+  
+  .content-right {
+    width: 25%;
+  }
+  
+  .card.sticky-md-top {
+    top: 1.8rem;
+    z-index: 1;
+  }
+  

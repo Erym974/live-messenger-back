@@ -1,42 +1,85 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>
-			Dashboard | {% block title %}{% endblock %}
-		</title>
-		<link rel="icon" href="/favicon.ico">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+<html lang="{{ app.request.locale }}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} Mon titre {% endblock %} | SwiftChat </title>
 
-		{% block stylesheets %}
-			{{ encore_entry_link_tags('app') }}
-		{% endblock %}
+    <link rel="icon" type="image/png" href="{{ asset('build/images/favicon/favicon-dashboard.png') }}" sizes="32x32">
 
-		{% block javascripts %}
-			{{ encore_entry_script_tags('app') }}
-		{% endblock %}
-	</head>
-	<body class="dark">
+    {% block stylesheets %}{{ encore_entry_link_tags('app') }}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
 
-		<div class="container">
-			<nav>
-				<ul>
-					<li><a href="{{ path('admin.dashboard') }}" class="logo"><img src="/logo.jpg" alt=""><span class="nav-item">Dashboard</span></a></li>
-					<li><a href="{{ path('admin.dashboard') }}"><i class="fas fa-home"></i><span class="nav-item">Accueil</span></a></li>
-					<li><a href="{{ path('admin.dashboard.users') }}"><i class="fas fa-users"></i><span class="nav-item">Utilisateurs</span></a></li>
-					<li><a href="{{ path('admin.dashboard.reports') }}"><i class="fas fa-flag"></i><span class="nav-item">Signalements</span></a></li>
-					<li><a href=""><i class="fas fa-cog"></i><span class="nav-item">Paramètres</span></a></li>
-				</ul>
-				<ul>
-					<li><a href="{{ path('auth.logout') }}"><i class="fas fa-sign-out-alt"></i><span class="nav-item">Deconnexion</span></a></li>
-				</ul>
-			</nav>
-			<main> 
-                <h1 class="tab-title">{{ block('title') }}</h1>
-                <div class="content">
-					{% block body %}{% endblock %}
-				</div>
-            </main=>
+    <div class="main-container" user-id="{% block user_id %}{% endblock %}">
+
+        {% include 'snippets/aside.html.twig' ignore missing with {'active': active ?? 'home'} %}
+
+        <main>
+            <div class="top-bar">
+                <div class="top df jcb aic">
+                    <div>
+                        <a id="menu-btn" class="hamburger-button inactive d-md-none border-0 ms-4" href="javascript:void(0);">
+                            <span class="line"></span>
+                            <span class="line"></span>
+                            <span class="line"></span>
+                        </a>
+                    </div>
+
+                    <div class="me-auto df aic">
+                        <a id="toggle-nav-btn" class="hamburger-button d-none d-md-block ms-4 {{ aside_class() }}" href="javascript:void(0);">
+                            <span class="line"></span>
+                            <span class="line"></span>
+                            <span class="line"></span>
+                        </a>
+                        <h2 class="mb-0 page_main_title" data-qr-website-name>{% block page_main_title %}{% endblock %}</h2>
+                    </div>
+
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 me-4">
+                        {% include "snippets/language_selector.twig" %}
+                    </ul>
+                    <div>
+                        <div class="df aic">
+                            <div {{ stimulus_controller('theme') }} class="theme-toggler me-4 d-none d-md-flex" >
+                                <span class="material-icons-sharp active text-white" >
+                                    light_mode
+                                </span>
+                                <span class="material-icons-sharp" >
+                                    dark_mode
+                                </span>
+                            </div>
+
+                            {% include "snippets/user_menu.html.twig" %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content d-flex jcb">
+                {% block body %}{% endblock %}
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Flash -->
+    <div class="flash-container">
+    {% for type, message in app.flashes %}
+        <div class="flash play">
+            <div class="alert alert-{{ type }}">
+            {{ message[0]|trans }}
+            </div>
         </div>
-    </body>
+    {% endfor %}
+    </div>
+    <!-- /Flash-->
+
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
+</body>
+
 </html>

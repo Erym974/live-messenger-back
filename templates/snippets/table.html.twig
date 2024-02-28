@@ -1,0 +1,101 @@
+<table id="table" class="table table-striped table-bordered mt-4 mb-2 w-100">
+    <thead>
+        <tr>
+            {% for param in params|keys %}
+                <th>{{ param|trans }}</th>
+            {% endfor %}
+            {% if actions is defined %}
+            <th></th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+            {% for entity in entities %}
+            <tr>
+                {% for param in params %}
+                    {% if param is iterable %}
+                        {% if param.type is defined %}
+                            {% if param.type == "switch" %}
+                                <td>
+                                    {% if param.clickable == true %}
+                                        <label class="switch" data-qr-switch="{{ url(param.route) }}" data-id="{{ entity.id }}" data-entity="{{ entity_name }}">
+                                    {% else %}
+                                    <label class="switch">
+                                    {% endif %}
+                                        <input type="checkbox" {% if attribute(entity, param.key) %}checked{% endif %}>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </td>
+                            {% endif %}
+
+                            {% if param.type == "img" %}
+                                <td class="{{ param.class ?? "" }}" > <img src="{{ attribute(entity, param.key) }}" class="img-fluid" /></td>
+                            {% elseif param.type == "date" %}
+                                <td class="{{ param.class ?? "" }}" >{{ attribute(entity, param.key)|date }}</td>
+                            {% elseif param.type == "status" %}
+                                <td class="status {{ param.class ?? "" }}" ><div class="d-flex gap-2 aic"><span class="{{ attribute(entity, param.value) ?? "" }} rounded-circle"></span><span>{{ attribute(entity, param.key)|trans }}</span></div></td>
+                            {% endif %}
+                        {% else %}
+                            <td class="{{ param.class ?? "" }}" >{{ attribute(entity, param.key)|trans }}</td>
+                        {% endif %}
+                    {% else %}
+                        <td>{{ attribute(entity, param)|trans }}</td>
+                    {% endif %}
+                {% endfor %}
+                    {% if actions is defined %}
+                    <td class="df aic jce">
+                        <div class="table-dropdown dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="data-action-{{ attribute(entity, "id") }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="material-icons-sharp">
+                                    more_horiz
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="{{ attribute(entity, "id") }}">
+                                {% for name, action in actions %}
+                                    {% if action.route is defined %}
+
+                                        {% set arguments = {} %}
+
+                                        {% for key, args in action.route.arguments %}
+                                            {% if key == "entity" %}
+                                                {% set arguments = arguments|merge({(args): attribute(entity, args)}) %}
+                                            {% else %}
+                                                {% set arguments = arguments|merge({(key): args}) %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if name == 'detail' %}
+                                            <li><a class="dropdown-item text-secondary d-flex aic gap-2" href="{{ path(action.route.name, arguments) }}" {{ action.route.target is defined ? "target='_blank'" }}>{% if action.icon %}<span class="material-icons-sharp">{{ action.icon }}</span>{% endif %}<span>{{ action.name is defined ? action.name|trans : "See"|trans }}</span></a></li>
+                                        {% elseif name == 'edit' %}
+                                            <li><a class="dropdown-item text-secondary d-flex aic gap-2" href="{{ path(action.route.name, arguments) }}" {{ action.route.target is defined ? "target='_blank'" }}>{% if action.icon %}<span class="material-icons-sharp">{{ action.icon }}</span>{% endif %}<span>{{ action.name is defined ? action.name|trans : "Edit"|trans }}</span></a></li>
+                                        {% elseif name == 'delete' %}
+                                            <li><a class="dropdown-item text-danger d-flex aic gap-2" href="{{ path(action.route.name, arguments) }}" {{ action.route.target is defined ? "target='_blank'" }}>{% if action.icon %}<span class="material-icons-sharp text-danger">{{ action.icon }}</span>{% endif %}<span class="text-danger">{{ action.name is defined ? action.name|trans : "Delete"|trans }}</span></a></li>
+                                        {% endif %}
+                                    {% elseif action.redirect is defined %}
+                                        {% if name == 'detail' %}
+                                            <li><a class="dropdown-item text-secondary d-flex aic gap-2" href="{{ attribute(entity, action.redirect) }}">{% if action.icon %}<span class="material-icons-sharp">{{ action.icon }}</span>{% endif %}<span>{% trans %}See{% endtrans %}</span></a></li>
+                                        {% elseif name == 'edit' %}
+                                            <li><a class="dropdown-item text-secondary d-flex aic gap-2" href="{{ attribute(entity, action.redirect) }}">{% if action.icon %}<span class="material-icons-sharp">{{ action.icon }}</span>{% endif %}<span>{% trans %}Edit{% endtrans %}</span></a></li>
+                                        {% elseif name == 'download' %}
+                                            <li><a class="dropdown-item text-secondary d-flex aic gap-2" href="{{ attribute(entity, action.redirect) }}">{% if action.icon %}<span class="material-icons-sharp">{{ action.icon }}</span>{% endif %}<span>{% trans %}Download{% endtrans %}</span></a></li>
+                                        {% elseif name == 'delete' %}
+                                            <li><a class="dropdown-item text-danger d-flex aic gap-2" href="{{ attribute(entity, action.redirect) }}">{% if action.icon %}<span class="material-icons-sharp text-danger">{{ action.icon }}</span>{% endif %}<span class="text-danger">{% trans %}Delete{% endtrans %}</span></a></li>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if name == 'detail' %}
+                                            <li><button class="dropdown-item text-secondary d-flex aic gap-2" data-qr-see="{{ entity_name }}" data-qr-id="{{ attribute(entity, "id") }}">{% if action.icon %}<span class="material-icons-sharp">{{ action.icon }}</span>{% endif %}<span>{% trans %}See{% endtrans %}</span></button></li>
+                                        {% elseif name == 'edit' %}
+                                            <li><button class="dropdown-item text-secondary d-flex aic gap-2" data-qr-edit="{{ entity_name }}" data-qr-id="{{ attribute(entity, "id") }}">{% if action.icon %}<span class="material-icons-sharp">{{ action.icon }}</span>{% endif %}<span>{% trans %}Edit{% endtrans %}</span></button></li>
+                                        {% elseif name == 'delete' %}
+                                            <li><button class="dropdown-item text-danger d-flex aic gap-2" data-qr-delete="{{ entity_name }}" data-qr-id="{{ attribute(entity, "id") }}">{% if action.icon %}<span class="material-icons-sharp">{{ action.icon }}</span>{% endif %}<span>{% trans %}Delete{% endtrans %}</span></button></li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </td>
+                    {% endif %}
+            </tr>
+            {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,38 @@
+<div class="profile df border-left">
+    <div class="info df fc">
+        <div class="dropdown">
+            <a class="dropdown-toggle df aic profile-links" href="#" data-bs-toggle="dropdown">
+                <div class="profile-photo me-2">
+                    {% if app.user.profilepicture != null %}
+                        <img src="{{ app.user.profilepicture }}" alt="Photo de profile" class="rounded-circle" style="width: 45px;">
+                    {% else %}
+                        <img src="{{ asset(default_profile_picture) }}" alt="Photo de profile">
+                    {% endif %}
+                </div>
+                <div class="d-none d-md-block">
+                    <p class="mb-0 text-dark"><b>{{ app.user.fullname(true) }}</b></p>
+                    <small class="text-muted">{{ app.user.role|trans }}</small>
+                </div>
+            </a>
+            <ul class="dropdown-menu user-menu">
+                <li>
+                    <a href="{{ path('user.my-account') }}" class="dropdown-item df jcs">
+                        <span class="material-icons-sharp text-primary me-4">
+                            manage_accounts
+                        </span>
+                        <span class="text-dark"><b>{% trans %}My account{% endtrans %}</b></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/auth/logout" class="dropdown-item df jcs">
+                        <span class="material-icons-sharp text-primary me-4">
+                            logout
+                        </span>
+                        <span class="text-dark"><b>{% trans %}Logout{% endtrans %}</b></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>

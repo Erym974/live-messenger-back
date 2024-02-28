@@ -8,95 +8,100 @@ $warning: #ffbb55;
 $danger: #ff7782;
 $dark: #1e1e1e;
 $light: #dce1eb;
+$text-muted: #7d8da1;
 
 $theme-colors: (
-  "primary":    $primary,
-  "secondary":  $secondary,
-  "success":    $success,
-  "info":       $info,
-  "warning":    $warning,
-  "danger":     $danger,
-  "light":      $light,
-  "dark":       $dark
+    "primary": $primary,
+    "secondary": $secondary,
+    "success": $success,
+    "info": $info,
+    "warning": $warning,
+    "danger": $danger,
+    "light": $light,
+    "dark": $dark
 );
 
+// Custom variables
+
+$color-info-dark: #7d8da1;
+$color-info-light: #dce1eb;
+$color-primary-variant: #111e88;
+$color-header: rgba(132, 139, 200, 0.18);
+
+$card-border-radius: 1rem;
+$border-radius-1: 0.4rem;
+$border-radius-2: 0.8rem;
+$border-radius-3: 1.2rem;
+
+$card-padding: 1.8rem;
+$padding-1: 1.2rem;
+
+$font-size-base:              0.9rem !default;
+$h1-font-size:                $font-size-base * 2 !default;
+$h2-font-size:                $font-size-base * 1.8 !default;
+$h3-font-size:                $font-size-base * 1.2 !default;
+$h4-font-size:                $font-size-base * 0.87 !default;
+$h5-font-size:                $font-size-base * 0.77 !default;
+$h6-font-size:                $font-size-base !default;
+
+// Import Table CSS
+@import "~datatables.net-dt/css/jquery.dataTables.min";
+
+// Import Material Design Icons
+@import '~material-icons/iconfont/material-icons.scss';
+
+:root {
+    --color-background: #f6f6f9;
+    --color-white: #fff;
+    --color-dark-variant: #677483;
+    --color-dark: #363949;
+    --color-light: #f4f4f4;
+    --color-light-2: rgba(167, 172, 216, 0.18);
+    --color-input: #ececec;
+    --color-grey: #ccc;
+    --box-shadow: 0 2rem 3rem var(--color-light);
+    --bg-white: #fff;
+    --hr-border-color: #c2c2c2;
+    --color-shadow: #ccc;
+    --color-menu-pages: #f9f9f9;
+    --color-menu-categories: #eaeaea;
+}
+
+.dark-theme {
+    --color-background: #181a1e;
+    --color-white: #202528;
+    --color-dark: #edeffd;
+    --color-dark-variant: #a3bdcc;
+    --color-light: rgba(0, 0, 0, 0.4);
+    --color-light-2: rgba(0, 0, 0, 0.5);
+    --color-input: #1a1c1f;
+    --color-grey: #6c757d;
+    --box-shadow: 0 2rem 3rem var(--color-light);
+    --bs-border-color: var(--bs-gray-dark);
+    --bg-white: #000;
+    --hr-border-color: #737373;
+    --color-shadow: #000;
+    --color-menu-pages: #2a3035;
+    --color-menu-categories: #24292d;
+}
+
+// Import bootsrap assets
 @import "~bootstrap/scss/bootstrap";
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 
-body {
-    font-family: 'Nunito', sans-serif;
-}
-
-h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
-    font-weight: 800;
-}
-
-:root {
-    --bs-heading-color : #fff !important;
-}
-
-hr {
-    color: #fff !important;
-}
 
 
-body {
+// Aliases
+@import "./_bs_aliases.scss";
+@import "./_bs_custom.scss";
 
-    background-color: #181a1e;
-    h2 {
-        color: #fff !important;
-    }
-
-    .box {
-        background-color: #f6f6f9;
-        border-radius: 8px;
-    }
-    
-    main#login {
-        height: 100vh; width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        form {
-            width: 50%;
-
-            .button-container {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                button {
-                    width: 50%;
-                }
-            }
-        }
-    }
-
-
-
-}
-
-.accordion-body {
-    .d-flex {
-        display: flex;
-    }
-
-    .f-c {
-        flex-direction: column;
-    }
-
-    .pre-wrap {
-        white-space: pre-wrap !important;
-    }
-
-    .block {
-        padding: 20px;
-        border-radius: 8px;
-        margin: 15px 0;
-        background-color: #181a1e !important;
-        color: #fff !important;
-        white-space: pre-wrap;
-    }
-}
+// Import all scss
+@import "./_dashboard.scss";
+@import "./_auth.scss";
+@import "./styles.scss";
+@import "./dashboard/_tables.scss";
+@import "./dashboard/careers.scss";
+@import "./dashboard/blog.scss";
+@import "./dashboard/users.scss";

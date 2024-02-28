@@ -1,0 +1,48 @@
+<aside class="{{ aside_class() }}">
+    <div class="aside-container">
+        <div class="top py-4 df aic jcb">
+            <a href="{{ path('admin.dashboard') }}" class="tdn">
+                <div class="logo df aic jcc">
+                    <h2 class="m-0 text-logo">Swift<span class="text-primary">Chat</span></h2>
+                </div>
+            </a>
+            <div class="close me-4 d-md-none df fc aic jcc" id="close-btn">
+                <span class="material-icons-sharp">close</span>
+            </div>
+        </div>
+
+        <div class="sidebar pt-4">
+
+            <a href="{{ path('admin.dashboard') }}" class="{% if active == "home" %}active{% endif %}">
+                <span class="material-icons-sharp">
+                    dashboard
+                </span>
+                <h3>{% trans %}Dashboard{% endtrans %}</h3>
+            </a>
+
+            <hr class="me-5">
+
+            {% if is_granted('ROLE_MODERATOR') %}
+            <a href="{{ path('admin.dashboard.users') }}" class="{{ active == "users" ? "active" }}">
+                <span class="material-icons-sharp">
+                    people
+                </span>
+                <h3>{% trans %}Users{% endtrans %}</h3>
+            </a>
+            <a href="{{ path('admin.dashboard.careers') }}" class="{{ active == "careers" ? "active" }}">
+                <span class="material-icons-sharp">
+                    group_add
+                </span>
+                <h3>{% trans %}Careers{% endtrans %}</h3>
+            </a>
+            <a href="{{ path('admin.dashboard.blog') }}" class="{{ active == "blog" ? "active" }}">
+                <span class="material-icons-sharp">
+                    newspaper
+                </span>
+                <h3>{% trans %}Blog{% endtrans %}</h3>
+            </a>
+            {% endif %}
+
+        </div>
+    </div>
+</aside>

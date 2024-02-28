@@ -24,7 +24,7 @@ class Group
     private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'groups', fetch: "EAGER")]
-    #[Groups(['user:groups', 'group:read'])]
+    #[Groups(['group:read'])]
     private Collection $members;
 
     #[ORM\OneToMany(mappedBy: 'conversation', fetch: "EAGER", targetEntity: Message::class, orphanRemoval: true)]
