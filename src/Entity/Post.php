@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PostRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
@@ -12,20 +13,25 @@ class Post
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('posts:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups('posts:read')]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('posts:read')]
     private ?string $short_description = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('posts:read')]
     private ?string $content = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?File $File = null;
+    #[Groups('posts:read')]
+    private ?File $image = null;
 
     public function getId(): ?int
     {
@@ -68,14 +74,14 @@ class Post
         return $this;
     }
 
-    public function getFile(): ?File
+    public function getImage(): ?File
     {
-        return $this->File;
+        return $this->image;
     }
 
-    public function setFile(?File $File): static
+    public function setImage(?File $image): static
     {
-        $this->File = $File;
+        $this->image = $image;
 
         return $this;
     }

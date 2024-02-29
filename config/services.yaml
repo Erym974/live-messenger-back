@@ -10,8 +10,9 @@ parameters:
         fr:  Français,
         en:  English,
     ]
-    upload_directory: '%kernel.project_dir%/public/uploads'
-    message_upload_directory: '%kernel.project_dir%/public/messages'
+    users_upload_directory: '%kernel.project_dir%/public/uploads/users'
+    messages_upload_directory: '%kernel.project_dir%/public/uploads/messages'
+    posts_upload_directory: '%kernel.project_dir%/public/uploads/posts'
 services:
     # default configuration for services in *this* file
     _defaults:

@@ -2,7 +2,6 @@
     "devDependencies": {
         "@babel/core": "^7.17.0",
         "@babel/preset-env": "^7.16.0",
-        "@ehyiah/ux-quill": "file:vendor/ehyiah/ux-quill/assets",
         "@hotwired/stimulus": "^3.0.0",
         "@symfony/stimulus-bridge": "^3.2.0",
         "@symfony/webpack-encore": "^4.0.0",

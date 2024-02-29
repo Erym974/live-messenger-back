@@ -10,7 +10,9 @@
 
 .dataTables_wrapper{
     @extend .card;
-    padding: 3rem;
+    border-radius: 10px;
+    height: 50%;
+    padding: 1rem;
     width: 100%;
 
     option{

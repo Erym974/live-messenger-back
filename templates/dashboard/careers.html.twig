@@ -28,7 +28,7 @@
 							{{ form_row(form.location) }}
 							{{ form_row(form.short_description) }}
 							{{ form_row(form.long_description) }}
-                            <div class="mb-3" data-requirement-form>
+                            <div class="mb-3" {{ stimulus_controller('requirements') }}>
                                 <label for="requirement-fields-label" class="form-label">Requirements</label>
                                 <ul id="requirement-fields-list" class="p-0" data-prototype="{{ form_widget(form.requirements.vars.prototype)|e }}" data-index="{{ form.requirements|length }}">
                                     {% for index, requirementField in form.requirements %}

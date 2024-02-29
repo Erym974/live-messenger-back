@@ -14,7 +14,7 @@
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h2 class="modal-title" id="createPostLabel">{% trans %}Add new Job{% endtrans %}</h2>
+							<h2 class="modal-title" id="createPostLabel">{% trans %}Add new Post{% endtrans %}</h2>
 							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 						</div>
 						<div class="modal-body">
@@ -42,7 +42,7 @@
                 "detail": {
                     "icon": "visibility",
                     'route': {
-                        "name": 'admin.dashboard.career',
+                        "name": 'admin.dashboard.blog.post',
                         'arguments' : {
                             'entity': 'id',
                         }
@@ -52,7 +52,8 @@
             'params': {
                 'Reference': 'id',
                 'Title': 'title',
-                'Description': 'short_description'
+                'Description': 'shortdescription',
+                'Image': 'image'
                 },
         } %}
 	</section>

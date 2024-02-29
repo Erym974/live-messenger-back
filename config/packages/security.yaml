@@ -44,7 +44,7 @@ security:
         - { path: ^/auth, roles: PUBLIC_ACCESS }
         - { path: ^/api/auth, roles: PUBLIC_ACCESS }
         - { path: ^/api/jobs, roles: PUBLIC_ACCESS }
-        - { path: ^/api/blogs, roles: PUBLIC_ACCESS }
+        - { path: ^/api/blog, roles: PUBLIC_ACCESS }
         - { path: ^/api/*, roles: JWT_HEADER_ACCESS }
         - { path: ^/dashboard, roles: ROLE_MODERATOR }
 

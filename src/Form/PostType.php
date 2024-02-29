@@ -10,6 +10,7 @@ use Ehyiah\QuillJsBundle\DTO\QuillGroup;
 use Ehyiah\QuillJsBundle\Form\QuillType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,26 +21,16 @@ class PostType extends AbstractType
         $builder
             ->add('title')
             ->add('short_description')
-            ->add('content', QuillType::class, [
-                // 'quill_extra_options' => [
-                //     'height' => '780px',
-                //     'theme' => 'snow',
-                //     'placeholder' => 'Hello Quill WYSIWYG',
-                // ],
-                // 'quill_options' => [
-                //     QuillGroup::build(
-                //         new BoldInlineField(),
-                //         new ItalicInlineField(),
-                //     ),
-                //     QuillGroup::build(
-                //         new HeaderField(HeaderField::HEADER_OPTION_1),
-                //         new HeaderField(HeaderField::HEADER_OPTION_2),
-                //     )
-                // ]
+            ->add('content', TextareaType::class, [
+                'label' => "Content",
+                'attr' => [
+                    'data-controller' => "quill",
+                    'hidden' => true
+                ]
             ])
-            // ->add('File')
             ->add('image', FileType::class, [
-                'mapped' => false
+                'mapped' => false,
+                'required' => $options['image_required'],
             ])
         ;
     }
@@ -48,6 +39,7 @@ class PostType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Post::class,
+            'image_required' => true,
         ]);
     }
 }

@@ -11,7 +11,6 @@
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.16",
-        "ehyiah/ux-quill": "^1.0",
         "lcobucci/jwt": "^4.0",
         "lexik/jwt-authentication-bundle": "^2.18",
         "nelmio/cors-bundle": "^2.3",
@@ -32,6 +31,8 @@
         "symfony/validator": "6.3.*",
         "symfony/webpack-encore-bundle": "^1.17",
         "symfony/yaml": "6.3.*",
+        "twig/extra-bundle": "^2.12|^3.0",
+        "twig/twig": "^2.12|^3.0",
         "vich/uploader-bundle": "^2.2"
     },
     "require-dev": {

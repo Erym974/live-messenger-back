@@ -1,0 +1,33 @@
+.ql-toolbar.ql-snow {
+    background-color: var(--color-white);
+    border: 1px solid #eee;
+    border-top-left-radius: $border-radius-1;
+    border-top-right-radius: $border-radius-1;
+
+    .ql-stroke {
+        stroke: var(--color-dark) !important;
+    }
+
+    .ql-picker-item {
+        color: #000 !important;
+    }
+}
+
+.ql-container.ql-snow {
+    border: 1px solid #eee;
+    border-bottom-left-radius: 0.4rem;
+    border-bottom-right-radius: 0.4rem;
+
+    .ql-editor {
+        background-color: #fff;
+        color: #000 !important;
+        border-bottom-left-radius: 0.4rem;
+        border-bottom-right-radius: 0.4rem;
+        
+        h2,
+        h1 {
+            color: #000 !important;
+        }
+    }
+}
+

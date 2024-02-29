@@ -258,7 +258,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getProfilePicture(): ?string
     {
-        return "http://localhost:8000/uploads" . $this->profilePicture;
+        return "http://localhost:8000/uploads/users" . $this->profilePicture;
     }
 
     public function setProfilePicture(string $profilePicture): static
@@ -269,7 +269,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getCoverPicture(): ?string
     {
-        return "http://localhost:8000/uploads" . $this->coverPicture;
+        return "http://localhost:8000/uploads/users" . $this->coverPicture;
     }
 
     public function setCoverPicture(string $coverPicture): static

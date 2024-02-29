@@ -35,9 +35,6 @@
             "./migrations/.gitignore"
         ]
     },
-    "ehyiah/ux-quill": {
-        "version": "1.0.0"
-    },
     "lexik/jwt-authentication-bundle": {
         "version": "2.18",
         "recipe": {

@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\File;
 use App\Entity\Job;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Form\JobType;
 use App\Form\PostType;
+use App\Service\UploadFileService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -111,8 +113,8 @@ class DashboardController extends AbstractController
     }
 
 
-    #[Route('/dashboard/blog', name: 'admin.dashboard.blog', methods: ['GET'])]
-    public function blog(Request $request) : Response
+    #[Route('/dashboard/blog/posts', name: 'admin.dashboard.blog', methods: ['GET', 'POST'])]
+    public function blog(Request $request,UploadFileService $UploadFileService) : Response
     {
 
         $posts = $this->entityManager->getRepository(Post::class)->findAll();
@@ -122,7 +124,19 @@ class DashboardController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
+
+            $tempFile = $form->get('image')->getData();
             $post = $form->getData();
+            
+            $fileResponse = $UploadFileService->uploadFile($tempFile, 'posts_upload_directory');
+
+            if($fileResponse->getStatus()) {
+                $post->setImage($fileResponse->getFile());
+            } else {
+                $this->addFlash('error', $fileResponse->getMessage());
+                return $this->redirectToRoute('admin.dashboard.blog');
+            }
+
             $this->entityManager->persist($post);
             $this->entityManager->flush();
             $this->addFlash('success', 'Post posted successfully');
@@ -136,8 +150,58 @@ class DashboardController extends AbstractController
 
     }
 
+    #[Route('/dashboard/blog/post/{id}', name: 'admin.dashboard.blog.post', methods: ['GET', 'POST'])]
+    public function post(Post $post, Request $request, UploadFileService $UploadFileService) : Response
+    {
+
+        $form = $this->createForm(PostType::class, $post, [
+            'image_required' => false,
+        ]);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+
+            $tempFile = $form->get('image')->getData();
+            $post = $form->getData();
+            
+            if($tempFile) {
+                $fileResponse = $UploadFileService->uploadFile($tempFile, 'posts_upload_directory');
+
+                if($fileResponse->getStatus()) {
+                    $post->setImage($fileResponse->getFile());
+                } else {
+                    $this->addFlash('error', $fileResponse->getMessage());
+                    return $this->redirectToRoute('admin.dashboard.blog');
+                }
+            }
+
+            $this->entityManager->persist($post);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Post posted successfully');
+        }
+
+        return $this->render('dashboard/post.html.twig', [
+            "post" => $post,
+            "form" => $form->createView(),
+            "active" => "blog"
+        ]);
+
+    }
+
+    #[Route('/dashboard/delete/post/{id}', name: 'admin.dashboard.delete.post', methods: ['GET'])]
+    public function post_delete(Post $post) : Response
+    {
+
+        $this->entityManager->remove($post);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Post deleted successfully');
+
+        return $this->redirectToRoute('admin.dashboard.blog');
+
+    }
+
     #[Route('/dashboard/delete/career/{id}', name: 'admin.dashboard.delete.career', methods: ['GET'])]
-    public function career_delete(Job $job, Request $request) : Response
+    public function career_delete(Job $job) : Response
     {
 
         $this->entityManager->remove($job);

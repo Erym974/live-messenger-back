@@ -91,7 +91,7 @@ class MessagesController extends AbstractController
 
                 $filename = md5(uniqid()) . "." . $fileData->guessExtension();
                 $type = $fileData->getClientmimeType();
-                $fileData->move($this->getParameter('message_upload_directory'), $filename);
+                $fileData->move($this->getParameter('messages_upload_directory'), $filename);
                 $file = new File();
                 $file->setName($filename);
                 $file->setType($type);
