@@ -95,7 +95,7 @@ class MessagesController extends AbstractController
                 $file = new File();
                 $file->setName($filename);
                 $file->setType($type);
-                $file->setPath("/" . $filename);
+                $file->setPath($this->getParameter("ressources_url") . "\/messages\/" . $filename);
                 $filesMessage->addFile($file);
                 $this->em->persist($filesMessage);
                 $this->em->persist($file);

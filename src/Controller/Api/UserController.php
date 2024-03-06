@@ -56,9 +56,9 @@ class UserController extends AbstractController
         $file->move($this->getParameter('users_upload_directory'), $filename);
 
         if ($params['picture'] == "profile") {
-            $user->setProfilePicture("/" . $filename);
+            $user->setProfilePicture($this->getParameter("ressources_url") . "\/users\/" . $filename);
         } else {
-            $user->setCoverPicture("/" . $filename);
+            $user->setCoverPicture($this->getParameter("ressources_url") . "\/users\/" . $filename);
         }
 
         $this->em->persist($user);

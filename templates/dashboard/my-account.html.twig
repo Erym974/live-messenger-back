@@ -14,17 +14,8 @@
           <div class="col-xl-3 col-lg-4">
             <div class="card p-3 mb-3">
                 <form class="d-flex fc aic jcc my-3 gap-2" id="profile-picture-form" method="POST" enctype="multipart/form-data">
-
                   <div class="position-relative">
-
-                    {% if app.user.profilepicture != null %}
-                      <img src="{{ app.user.profilepicture }}" class="rounded-circle" alt="" height="130" width="130">
-                    {% else %}
-                      <img src="{{ asset(default_profile_picture) }}" class="rounded-circle" alt="" height="130" width="130">
-                    {% endif %}
-                    <button type="button" class="btn btn-primary rounded-circle df aic jcc upload-photo-btn" onclick="document.getElementById('profile-picture').click();">
-                      <span class="material-icons-sharp">photo_camera</span>
-                    </button>
+                    <img src="{{ app.user.profilepicture }}" class="rounded-circle" alt="" height="130" width="130">
                   </div>
                   <input type="file" class="d-none" name="profile-picture" id="profile-picture">
                   <input type="hidden" name="form" value="profile-picture">

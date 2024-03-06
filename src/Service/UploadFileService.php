@@ -52,7 +52,7 @@ class UploadFileService extends AbstractService {
             ->setParent($parent)
             ->setName($filename)
             ->setType($type)
-            ->setPath("/" . $filename);
+            ->setPath($this->getParameter("ressources_url") . "/" . $parent . "/" . $filename);
 
         $this->em->persist($file);
         $this->em->flush();
