@@ -25,7 +25,7 @@ class InvitationsController extends AbstractController
         
     }
 
-    #[Route('/api/invitations', name: 'api.invitations', methods: ['GET', 'POST', 'DELETE', 'PATCH'])]
+    #[Route('/invitations', name: 'api.invitations', methods: ['GET', 'POST', 'DELETE', 'PATCH'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function invitations(?Invitation $invitation, Request $request, InvitationService $invitationService): JsonResponse
     {
 

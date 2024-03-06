@@ -59,7 +59,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['user:read', 'user:public', 'user:friend'])]
-    private ?string $coverPicture = "/default_cover_picture.jpg";
+    private ?string $coverPicture = "/default_cover_picture.png";
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['user:read', 'user:public', 'user:friend'])]

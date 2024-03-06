@@ -25,7 +25,7 @@ class UserController extends AbstractController
     {
     }
 
-    #[Route('api/users/me', name: 'api.users.me.post', methods: ['POST'])]
+    #[Route('users/me', name: 'api.users.me.post', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function users_me_post(Request $request): JsonResponse
     {
 
@@ -71,7 +71,7 @@ class UserController extends AbstractController
         ], ['groups' => 'user:read']);
     }
 
-    #[Route('api/users/me', name: 'api.users.me.patch', methods: ['PATCH'])]
+    #[Route('users/me', name: 'api.users.me.patch', methods: ['PATCH'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function me_patch(Request $request): JsonResponse
     {
 
@@ -112,7 +112,7 @@ class UserController extends AbstractController
         ], ['groups' => 'user:read']);
     }
 
-    #[Route('api/users/me', name: 'api.users.me.get', methods: ['GET'])]
+    #[Route('users/me', name: 'api.users.me.get', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function me_get(Request $request): JsonResponse
     {
         /** @var User */
@@ -126,7 +126,7 @@ class UserController extends AbstractController
         ], ['groups' => 'user:read']);
     }
 
-    #[Route('api/users/{user}', name: 'api.users', methods: ['GET'])]
+    #[Route('users/{user}', name: 'api.users', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function users(User $user): JsonResponse
     {
 

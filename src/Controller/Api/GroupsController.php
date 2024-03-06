@@ -14,8 +14,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 
 class GroupsController extends AbstractController
 {
@@ -25,7 +23,7 @@ class GroupsController extends AbstractController
     }
 
     /** Modification des membres */
-    #[Route('api/members/{group}', name: 'api.members', methods: ['POST'])]
+    #[Route('members/{group}', name: 'api.members', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function members(Group $group, Request $request): JsonResponse
     {
 
@@ -99,10 +97,8 @@ class GroupsController extends AbstractController
         return $this->responseService->ReturnError(404, "Group not found");
     }
 
-
-
     /** Création d'un groupe */
-    #[Route('api/groups', name: 'api.groups.post', methods: ['POST'])]
+    #[Route('groups', name: 'api.groups.post', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function groups_post(Request $request): JsonResponse
     {
 
@@ -138,12 +134,11 @@ class GroupsController extends AbstractController
 
 
     /** Récupération de tout les groupes */
-    #[Route('api/groups', name: 'api.groups.get', methods: ['GET'])]
+    #[Route('groups', name: 'api.groups.get', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function groups_get(): JsonResponse
     {
         /** @var User */
         $user = $this->getUser();
-
         $groups = $user->getGroups()->toArray();
 
         usort($groups, function ($a, $b) {
@@ -160,7 +155,7 @@ class GroupsController extends AbstractController
     }
 
     /** Récupération d'un groupe */
-    #[Route('api/groups/{group}', name: 'api.group.get', methods: ['GET'])]
+    #[Route('groups/{group}', name: 'api.group.get', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function group_get(Group $group, Request $request): JsonResponse
     {
         /** @var User */
@@ -170,4 +165,5 @@ class GroupsController extends AbstractController
         $this->groupService->parseDatas($group);
         return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
     }
+
 }

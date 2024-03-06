@@ -30,7 +30,7 @@ class MessagesController extends AbstractController
     {
     }
 
-    #[Route('api/messages/{group}', name: 'api.messages.post', methods: ['POST'])]
+    #[Route('messages/{group}', name: 'api.messages.post', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function messages_post(Group $group, Request $request): JsonResponse
     {
 
@@ -116,7 +116,7 @@ class MessagesController extends AbstractController
         return $this->responseService->ReturnSuccess($message, ['groups' => 'messages:read']);
     }
 
-    #[Route('api/messages/{group}', name: 'api.messages.get', methods: ['GET'])]
+    #[Route('messages/{group}', name: 'api.messages.get', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function messages_get(Group $group, Request $request): JsonResponse
     {
 
@@ -150,7 +150,7 @@ class MessagesController extends AbstractController
         return $this->responseService->ReturnSuccess(["total" => $total, 'size' => count($messages), 'pages' => $maxPage, 'messages' => $messages], ['groups' => 'messages:read']);
     }
 
-    #[Route('api/message', name: 'api.messages.message', methods: ['GET', 'PATCH'])]
+    #[Route('message', name: 'api.messages.message', methods: ['GET', 'PATCH'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function messages_edit(Request $request): JsonResponse
     {
 

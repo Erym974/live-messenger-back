@@ -22,7 +22,7 @@ class FriendsController extends AbstractController
         
     }
 
-    #[Route('/api/friends/{friend?}', name: 'api.friend.delete', methods: ['DELETE'])]
+    #[Route('/friends/{friend?}', name: 'api.friend.delete', methods: ['DELETE'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function friend_delete(?Friend $friend, Request $request): JsonResponse
     {
 
@@ -53,7 +53,7 @@ class FriendsController extends AbstractController
 
     }
 
-    #[Route('/api/friends/{friend}', name: 'api.friend.get', methods: ['GET'])]
+    #[Route('/friends/{friend}', name: 'api.friend.get', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function friend_get(?Friend $friend): JsonResponse
     {
 
@@ -76,7 +76,7 @@ class FriendsController extends AbstractController
 
     }
 
-    #[Route('/api/friends', name: 'api.friends.get', methods: ['GET'])]
+    #[Route('/friends', name: 'api.friends.get', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function friends_get(): JsonResponse
     {
 

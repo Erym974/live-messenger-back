@@ -23,7 +23,11 @@ class KernelSubscriber implements EventSubscriberInterface {
     public function onKernelRequest($event)
     {
         $request = $event->getRequest();
-        if (str_contains($request->getPathInfo(), '/api')) {
+
+        $host = $request->getHost();
+        $subdomain = explode('.', $host)[0];
+
+        if ($subdomain == 'api') {
             $locale = $request->headers->get('Content-Language') ?? 'en';
             $request->setLocale($locale);
             $this->localeSwitcher->setLocale($locale);

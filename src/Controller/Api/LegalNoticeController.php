@@ -14,20 +14,15 @@ use Symfony\Component\HttpFoundation\Request;
 class LegalNoticeController extends AbstractController
 {
 
-    public function __construct(private ResponseService $responseService)
-    {
-        
-    }
-
-    #[Route('api/legal-notices/{type}', name: 'api.legal-notices', methods: ['GET'])]
-    public function jobs(string $type, LegalNoticeRepository $legalNoticeRepository, Request $request): JsonResponse
+    #[Route('legal-notices/{type}', name: 'api.legal-notices', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
+    public function jobs(string $type, LegalNoticeRepository $legalNoticeRepository, Request $request, ResponseService $responseService): JsonResponse
     {
         $locale = $request->getLocale() ?? "fr";
         $legalNotice = $legalNoticeRepository->findOneBy(['type' => $type, 'locale' => $locale]);
 
-        if(!$legalNotice) return $this->responseService->ReturnError(404, "No such legal notice");
+        if(!$legalNotice) return $responseService->ReturnError(404, "No such legal notice");
 
-        return $this->responseService->ReturnSuccess($legalNotice, ['groups' => 'legalNotice:read']);
+        return $responseService->ReturnSuccess($legalNotice, ['groups' => 'legalNotice:read']);
     }
 
 }

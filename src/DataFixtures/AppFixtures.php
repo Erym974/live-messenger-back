@@ -34,7 +34,7 @@ class AppFixtures extends Fixture
         $admin = UserFactory::createOne([
             'email' => 'admin@admin.fr',
             'firstname' => 'admin',
-            'password' => 'admin',
+            'password' => '@dmin',
             'roles' => ['ROLE_ADMIN']
         ]);
         
@@ -47,7 +47,7 @@ class AppFixtures extends Fixture
                 'email' => "user-$i@user.fr",
                 'firstname' => 'user',
                 'lastname' => "$i",
-                'password' => 'user'
+                'password' => '@ser'
             ]);
         }
 

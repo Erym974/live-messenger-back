@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\File;
-use App\Entity\Group;
 use App\Entity\Job;
 use App\Entity\LegalNotice;
 use App\Entity\Post;
@@ -11,15 +9,14 @@ use App\Entity\User;
 use App\Form\JobType;
 use App\Form\LegalNoticeType;
 use App\Form\PostType;
-use App\Service\GroupService;
 use App\Service\UploadFileService;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 
 class DashboardController extends AbstractController
 {
@@ -29,14 +26,8 @@ class DashboardController extends AbstractController
         
     }
 
-    #[Route('/', name: 'admin.redirection', methods: ['GET'])]
-    public function redirection() : Response
-    {
-        return $this->redirectToRoute('auth.login');
-    }
 
-
-    #[Route('/dashboard', name: 'admin.dashboard', methods: ['GET'])]
+    #[Route('/', name: 'admin.dashboard', methods: ['GET'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function dashboard() : Response
     {
         return $this->render('dashboard/index.html.twig', [
@@ -45,7 +36,7 @@ class DashboardController extends AbstractController
 
     }
 
-    #[Route('/dashboard/users', name: 'admin.dashboard.users', methods: ['GET'])]
+    #[Route('/users', name: 'admin.dashboard.users', methods: ['GET'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function users() : Response
     {
 
@@ -58,7 +49,7 @@ class DashboardController extends AbstractController
 
     }
 
-    #[Route('/dashboard/users/{id}', name: 'admin.dashboard.user', methods: ['GET'])]
+    #[Route('/users/{id}', name: 'admin.dashboard.user', methods: ['GET'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function user(User $user) : Response
     {
 
@@ -69,7 +60,7 @@ class DashboardController extends AbstractController
 
     }
 
-    #[Route('/dashboard/careers', name: 'admin.dashboard.careers', methods: ['GET', 'POST'])]
+    #[Route('/careers', name: 'admin.dashboard.careers', methods: ['GET', 'POST'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function careers(Request $request) : Response
     {
 
@@ -95,7 +86,7 @@ class DashboardController extends AbstractController
 
     }
 
-    #[Route('/dashboard/terms', name: 'admin.dashboard.terms', methods: ['GET', 'POST'])]
+    #[Route('/terms', name: 'admin.dashboard.terms', methods: ['GET', 'POST'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function terms(Request $request) : Response
     {
 
@@ -137,7 +128,7 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route('/dashboard/privacy', name: 'admin.dashboard.privacy', methods: ['GET', 'POST'])]
+    #[Route('/privacy', name: 'admin.dashboard.privacy', methods: ['GET', 'POST'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function privacy(Request $request) : Response
     {
         $locale = $request->query->get('locale', 'fr');
@@ -178,7 +169,7 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route('/dashboard/careers/{id}', name: 'admin.dashboard.career', methods: ['GET', 'POST'])]
+    #[Route('/careers/{id}', name: 'admin.dashboard.career', methods: ['GET', 'POST'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function career(Job $job, Request $request) : Response
     {
 
@@ -199,7 +190,7 @@ class DashboardController extends AbstractController
 
     }
 
-    #[Route('/dashboard/blog/posts', name: 'admin.dashboard.blog', methods: ['GET', 'POST'])]
+    #[Route('/blog/posts', name: 'admin.dashboard.blog', methods: ['GET', 'POST'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function blog(Request $request,UploadFileService $UploadFileService) : Response
     {
 
@@ -240,7 +231,7 @@ class DashboardController extends AbstractController
 
     }
 
-    #[Route('/dashboard/blog/post/{id}', name: 'admin.dashboard.blog.post', methods: ['GET', 'POST'])]
+    #[Route('/blog/post/{id}', name: 'admin.dashboard.blog.post', methods: ['GET', 'POST'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function post(Post $post, Request $request, UploadFileService $UploadFileService) : Response
     {
 
@@ -278,7 +269,7 @@ class DashboardController extends AbstractController
 
     }
 
-    #[Route('/dashboard/delete/post/{id}', name: 'admin.dashboard.delete.post', methods: ['GET'])]
+    #[Route('/delete/post/{id}', name: 'admin.dashboard.delete.post', methods: ['GET'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function post_delete(Post $post) : Response
     {
 
@@ -290,7 +281,7 @@ class DashboardController extends AbstractController
 
     }
 
-    #[Route('/dashboard/delete/career/{id}', name: 'admin.dashboard.delete.career', methods: ['GET'])]
+    #[Route('/delete/career/{id}', name: 'admin.dashboard.delete.career', methods: ['GET'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function career_delete(Job $job) : Response
     {
 

@@ -14,7 +14,8 @@ security:
         ROLE_MODERATOR: ROLE_USER
     firewalls:
         login:
-            pattern: ^/api/auth/login
+            host: ^api\.swiftchat\.(fr|local)$
+            pattern: ^/auth/login
             stateless: true
             json_login:
                 check_path: api_auth_login
@@ -23,7 +24,8 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
         api:
-            pattern:   ^/api/(?!(blog/posts$|jobs$|auth$|legal-notices/.*$)).*
+            host: ^api\.swiftchat\.(fr|local)$
+            pattern: ^/(?!blog/posts$|jobs$|auth$|legal-notices/.*$|$).*$
             stateless: true
             jwt: ~
         dev:
@@ -53,13 +55,14 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/auth, roles: PUBLIC_ACCESS }
-        - { path: ^/api/auth, roles: PUBLIC_ACCESS }
-        - { path: ^/api/jobs, roles: PUBLIC_ACCESS }
-        - { path: ^/api/blog/posts, roles: PUBLIC_ACCESS }
-        - { path: ^/api/legal-notices, roles: PUBLIC_ACCESS }
-        - { path: ^/api, roles: ROLE_USER }
-        - { path: ^/dashboard, roles: ROLE_MODERATOR }
+        - { path: ^/auth, roles: PUBLIC_ACCESS, host: api\.swiftchat }
+        - { path: ^/jobs, roles: PUBLIC_ACCESS, host: api\.swiftchat }
+        - { path: ^/blog/posts, roles: PUBLIC_ACCESS, host: api\.swiftchat }
+        - { path: ^/legal-notices, roles: PUBLIC_ACCESS, host: api\.swiftchat }
+        - { path: ^/$, roles: PUBLIC_ACCESS, host: api\.swiftchat }
+        - { path: ^/, roles: ROLE_USER, host: api\.swiftchat }
+        - { path: ^/auth, roles: PUBLIC_ACCESS, host: dashboard\.swiftchat }
+        - { path: ^/*, roles: ROLE_MODERATOR, host: dashboard\.swiftchat }
 
 when@test:
     security:

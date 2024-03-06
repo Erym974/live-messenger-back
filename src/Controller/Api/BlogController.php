@@ -11,16 +11,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class BlogController extends AbstractController
 {
 
-    public function __construct(private ResponseService $responseService)
-    {
-        
-    }
-
-    #[Route('api/blog/posts', name: 'api..blog.posts', methods: ['GET'])]
-    public function posts(PostRepository $postRepository): JsonResponse
+    #[Route('blog/posts', name: 'api..blog.posts', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
+    public function posts(PostRepository $postRepository, ResponseService $responseService): JsonResponse
     {
         $posts = $postRepository->findAll();
-        return $this->responseService->ReturnSuccess($posts, ['groups' => 'posts:read']);
+        return $responseService->ReturnSuccess($posts, ['groups' => 'posts:read']);
     }
 
 }

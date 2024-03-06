@@ -14,16 +14,11 @@ use Symfony\Component\HttpFoundation\Request;
 class JobController extends AbstractController
 {
 
-    public function __construct(private ResponseService $responseService)
-    {
-        
-    }
-
-    #[Route('api/jobs', name: 'api.jobs', methods: ['GET'])]
-    public function jobs(JobRepository $jobRepository): JsonResponse
+    #[Route('jobs', name: 'api.jobs', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
+    public function jobs(JobRepository $jobRepository, ResponseService $responseService): JsonResponse
     {
         $jobs = $jobRepository->findAll();
-        return $this->responseService->ReturnSuccess($jobs, ['groups' => 'jobs:read']);
+        return $responseService->ReturnSuccess($jobs, ['groups' => 'jobs:read']);
     }
 
 }

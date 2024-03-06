@@ -31,7 +31,7 @@ class AuthController extends AbstractController
         
     }
 
-    #[Route('api/auth/register', name: 'api.auth.register', methods: ['POST'])]
+    #[Route('auth/register', name: 'api.auth.register', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function register(Request $request): JsonResponse
     {
 
@@ -86,7 +86,7 @@ class AuthController extends AbstractController
 
     /*** RESET PASSWORD */
 
-    #[Route('api/auth/reset-password', name: 'api.auth.reset-password', methods: ['POST'])]
+    #[Route('auth/reset-password', name: 'api.auth.reset-password', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function resetPasswordRequest(Request $request, MailerInterface $mailer, TranslatorInterface $translator): JsonResponse
     {
 
@@ -108,7 +108,7 @@ class AuthController extends AbstractController
 
     }
 
-    #[Route('api/auth/reset-password/reset', name: 'api.auth.reset-password.reset', methods: ['POST'])]
+    #[Route('auth/reset-password/reset', name: 'api.auth.reset-password.reset', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function resetPassword(Request $request, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator): JsonResponse
     {
 
@@ -178,7 +178,7 @@ class AuthController extends AbstractController
 
     /*** ACTIVE ACCOUNT */
 
-    #[Route('api/auth/active-account', name: 'api.auth.active-account', methods: ['POST'])]
+    #[Route('auth/active-account', name: 'api.auth.active-account', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function activeAccount(Request $request, TranslatorInterface $translator): JsonResponse
     {
 
@@ -203,7 +203,7 @@ class AuthController extends AbstractController
 
     }
 
-    #[Route('api/auth/active-account/request', name: 'api.auth.active-account.request', methods: ['POST'])]
+    #[Route('auth/active-account/request', name: 'api.auth.active-account.request', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function activeAccountRequest(Request $request, TranslatorInterface $translator): JsonResponse
     {
             

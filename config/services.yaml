@@ -7,6 +7,7 @@ parameters:
     timezone: '%env(APP_TIMEZONE)%'
     default_locale: 'fr'
     front_end: '%env(FRONTEND_URL)%'
+    default_extension: '%env(URL_EXTENSION)%'
     app.locales: [
         fr:  Français,
         en:  English,

@@ -41,7 +41,7 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
                 $foundUser = $this->em->getRepository(User::class)->findOneBy(['email' => $userIdentifier]);
 
                 if (!$foundUser) throw new UserNotFoundException();
-                // if (!$foundUser->hasRole('ROLE_ADMIN')) throw new UserNotFoundException();
+                if (!$foundUser->hasRole('ROLE_ADMIN')) throw new UserNotFoundException();
 
                 return $foundUser;
             }),
@@ -59,9 +59,7 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        // For example:
         return new RedirectResponse($this->urlGenerator->generate('admin.dashboard'));
-        throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
     }
 
     protected function getLoginUrl(Request $request): string

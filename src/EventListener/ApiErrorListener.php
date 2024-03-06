@@ -12,7 +12,10 @@ class ApiErrorListener
     {
         $request = $event->getRequest();
 
-        if (strpos($request->getPathInfo(), 'api') !== false) {
+        $host = $request->getHost();
+        $subdomain = explode('.', $host)[0];
+
+        if ($subdomain == 'api') {
             $exception = $event->getThrowable();
             
             switch (true) {
