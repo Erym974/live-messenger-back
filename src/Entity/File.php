@@ -20,7 +20,7 @@ class File
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['messages:read'])]
+    #[Groups(['messages:read', 'posts:read'])]
     private ?string $path = null;
 
     #[ORM\Column(length: 50)]
@@ -28,8 +28,11 @@ class File
     private ?string $type = null;
 
     #[ORM\ManyToOne(inversedBy: 'files')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Message $message = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $parent = null;
 
     public function getId(): ?int
     {
@@ -50,7 +53,7 @@ class File
 
     public function getPath(): ?string
     {
-        return "http://localhost:8000/messages" . $this->path;
+        return "http://localhost:8000/uploads/" . $this->parent . "" . $this->path;
     }
 
     public function setPath(string $path): static
@@ -80,6 +83,23 @@ class File
     public function setMessage(?Message $message): static
     {
         $this->message = $message;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->getPath();
+    }
+
+    public function getParent(): ?string
+    {
+        return $this->parent;
+    }
+
+    public function setParent(string $parent): static
+    {
+        $this->parent = $parent;
 
         return $this;
     }

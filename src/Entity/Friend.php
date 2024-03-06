@@ -29,7 +29,7 @@ class Friend
     private ?\DateTimeImmutable $since = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['user:friend', 'user:profile'])]
     private ?Group $conversation = null;
 
@@ -48,7 +48,7 @@ class Friend
 
     public function hasUser(User $user): bool
     {
-        return $this->user === $user || $this->friend === $user;
+        return $this->user->getId() === $user->getId() || $this->friend->getId() === $user->getId();
     }
 
     public function getUser(): ?User

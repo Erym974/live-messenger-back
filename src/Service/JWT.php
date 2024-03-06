@@ -40,6 +40,8 @@ class JWT extends AbstractService {
     static public function identify(string $jwt) : bool
     {
         if(!$jwt) return false;
+        if (preg_match_all('/\./', $jwt) !== 2) return false;
+
         $header = self::getHeader($jwt);
         $payload = self::getPayload($jwt);
         if ($header === null || $payload === null) return false;

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale }}">
+	<head>
+		<meta charset="UTF-8">
+		<title>Dashboard | {% block title %}{% endblock %}
+		</title>
+		<link rel="icon" href="/favicon.ico">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('app') }}
+		{% endblock %}
+
+		{% block javascripts %}
+			{{ encore_entry_script_tags('app') }}
+		{% endblock %}
+	</head>
+	<body class="dark-theme">
+		{% block body %}{% endblock %}
+	</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends 'dashboard.html.twig' %}
+
+
+{% block title %}{% trans %}Privacy{% endtrans %}{% endblock %}
+{% block page_main_title %}{% trans %}Privacy{% endtrans %}{% endblock %}
+{% set active = "privacy" %}
+
+{% block body %}
+
+	<section id="privacy">
+
+		<div class="df aic jcb">
+			<h2>{% trans %}Edit privacy{% endtrans %}</h2>
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+					{% trans %}Change language{% endtrans %}
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+					<li>
+						<a class="dropdown-item" href="?locale=fr">{% trans %}French{% endtrans %}</a>
+					</li>
+					<li>
+						<a class="dropdown-item" href="?locale=en">{% trans %}English{% endtrans %}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<span class="h4">{{ legalNotice_locale }}</span>
+
+		{{ form_start(form, {
+			attr: {
+				'class': 'mt-4',
+				'id': 'updateLegalNotice'
+			},
+		}) }}
+		{{ form_widget(form) }}
+		{{ form_end(form) }}
+
+		<div class="df aic jce">
+			<button type="submit" form="updateLegalNotice" class="btn btn-primary">{% trans %}Update privacy{% endtrans %}</div>
+		</div>
+
+	</section>
+
+{% endblock %}

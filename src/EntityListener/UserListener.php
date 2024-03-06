@@ -2,6 +2,8 @@
 
 namespace App\EntityListener;
 
+use App\Entity\Meta;
+use App\Entity\Setting;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -16,6 +18,8 @@ class UserListener
 
     public function prePersist(User $user)
     {
+
+        $this->createSetting($user);
 
         if($user->getFriendCode() == null) $user->setFriendCode($this->generateFriendCode());
         $this->encodePassword($user);
@@ -47,5 +51,22 @@ class UserListener
             $code = $timestamp[0] . "-" . $timestamp[1] . "-" . $random;
         }
         return $code;
+    }
+
+    private function createSetting(User $user) {
+        $settings = [
+            "allow-friend-request", 
+            "language"
+        ];
+
+        foreach($settings as $meta) {
+            $meta = $this->em->getRepository(Meta::class)->findOneBy(['name' => $meta]);
+            if(!$meta) continue;
+            $setting = new Setting();
+            $setting->setUser($user);
+            $setting->setMeta($meta);
+            $setting->setValue($meta->getValue());
+            $this->em->persist($setting);
+        }
     }
 }

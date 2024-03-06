@@ -1,0 +1,17 @@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="dropdown-language" role="button"
+        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <img src="{{ asset("build/images/flags/#{ app.request.getLocale() }.svg") }}" class="flag-icon">
+    </a>
+    <ul class="dropdown-menu dropdown-menu-right dropdown-language" aria-labelledby="dropdown-language">
+        {% for locale in locales %}
+            {% for key, value in locale %}
+                <li>
+                    <a class="dropdown-item text-dark df aic" href="{{ path('app_language', {locale: key}) }}">
+                        <img src="{{ asset('build/images/flags/' ~ key ~ '.svg') }}" class="flag-icon me-2"> {{ value }}
+                    </a>
+                </li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</li>

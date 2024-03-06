@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[IsGranted('JWT_HEADER_ACCESS')]
+
 class InvitationsController extends AbstractController
 {
 

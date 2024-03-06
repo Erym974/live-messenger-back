@@ -2,8 +2,21 @@
 
 namespace App\Controller;
 
+use App\Entity\File;
+use App\Entity\Group;
+use App\Entity\Job;
+use App\Entity\LegalNotice;
+use App\Entity\Post;
+use App\Entity\User;
+use App\Form\JobType;
+use App\Form\LegalNoticeType;
+use App\Form\PostType;
+use App\Service\GroupService;
+use App\Service\UploadFileService;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Yaml\Yaml;
@@ -19,15 +32,16 @@ class DashboardController extends AbstractController
     #[Route('/', name: 'admin.redirection', methods: ['GET'])]
     public function redirection() : Response
     {
-
         return $this->redirectToRoute('auth.login');
     }
+
 
     #[Route('/dashboard', name: 'admin.dashboard', methods: ['GET'])]
     public function dashboard() : Response
     {
-
-        return $this->render('dashboard/index.html.twig');
+        return $this->render('dashboard/index.html.twig', [
+            "active" => "home"
+        ]);
 
     }
 
@@ -35,23 +49,256 @@ class DashboardController extends AbstractController
     public function users() : Response
     {
 
-        return $this->render('dashboard/users.html.twig');
+        $users = $this->entityManager->getRepository(User::class)->findAll();
+
+        return $this->render('dashboard/users.html.twig', [
+            "users" => $users,
+            "active" => "users"
+        ]);
 
     }
 
-    #[Route('/dashboard/reports', name: 'admin.dashboard.reports', methods: ['GET'])]
-    public function reports() : Response
+    #[Route('/dashboard/users/{id}', name: 'admin.dashboard.user', methods: ['GET'])]
+    public function user(User $user) : Response
     {
 
-        return $this->render('dashboard/reports.html.twig');
+        return $this->render('dashboard/user_detail.html.twig', [
+            "user" => $user,
+            "active" => "users"
+        ]);
 
     }
 
-    #[Route('/dashboard/settings', name: 'admin.dashboard.settings', methods: ['GET'])]
-    public function settings() : Response
+    #[Route('/dashboard/careers', name: 'admin.dashboard.careers', methods: ['GET', 'POST'])]
+    public function careers(Request $request) : Response
     {
 
-        return $this->render('dashboard/settings.html.twig');
+        $jobs = $this->entityManager->getRepository(Job::class)->findAll();
+
+        $job = new Job();
+        $form = $this->createForm(JobType::class, $job);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $job = $form->getData();
+            $job->setRequirements(array_filter($job->getRequirements()));
+            $this->entityManager->persist($job);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Job created successfully');
+        }
+
+        return $this->render('dashboard/careers.html.twig', [
+            "form" => $form->createView(),
+            "jobs" => $jobs,
+            "active" => "careers"
+        ]);
+
+    }
+
+    #[Route('/dashboard/terms', name: 'admin.dashboard.terms', methods: ['GET', 'POST'])]
+    public function terms(Request $request) : Response
+    {
+
+        $locale = $request->query->get('locale', 'fr');
+
+        switch($locale) {
+            case 'english':
+            case 'en':
+                $termLocale = "English";
+                $locale = LegalNotice::ENGLISH;
+                break;
+            default:
+                $termLocale = "Français";
+                $locale = LegalNotice::FRENCH;
+                break;
+        }
+
+        $legalNotices = $this->entityManager->getRepository(LegalNotice::class)->findOneBy(['type' => LegalNotice::TERMS, 'locale' => $locale]);
+
+        if(!$legalNotices) {
+            $legalNotices = new LegalNotice();
+            $legalNotices->setType(LegalNotice::TERMS);
+            $legalNotices->setLocale($locale);
+        }
+
+        $form = $this->createForm(LegalNoticeType::class, $legalNotices);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $legalNotices = $form->getData();
+            $this->entityManager->persist($legalNotices);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Legal notice updated successfully');
+        }
+
+        return $this->render('dashboard/terms.html.twig', [
+            "form" => $form->createView(),
+            "legalNotice_locale" => $termLocale,
+        ]);
+    }
+
+    #[Route('/dashboard/privacy', name: 'admin.dashboard.privacy', methods: ['GET', 'POST'])]
+    public function privacy(Request $request) : Response
+    {
+        $locale = $request->query->get('locale', 'fr');
+
+        switch($locale) {
+            case 'english':
+            case 'en':
+                $termLocale = "English";
+                $locale = LegalNotice::ENGLISH;
+                break;
+            default:
+                $termLocale = "Français";
+                $locale = LegalNotice::FRENCH;
+                break;
+        }
+
+        $legalNotices = $this->entityManager->getRepository(LegalNotice::class)->findOneBy(['type' => LegalNotice::PRIVACY, 'locale' => $locale]);
+
+        if(!$legalNotices) {
+            $legalNotices = new LegalNotice();
+            $legalNotices->setType(LegalNotice::PRIVACY);
+            $legalNotices->setLocale($locale);
+        }
+
+        $form = $this->createForm(LegalNoticeType::class, $legalNotices);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $legalNotices = $form->getData();
+            $this->entityManager->persist($legalNotices);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Legal notice updated successfully');
+        }
+
+        return $this->render('dashboard/privacy.html.twig', [
+            "form" => $form->createView(),
+            "legalNotice_locale" => $termLocale,
+        ]);
+    }
+
+    #[Route('/dashboard/careers/{id}', name: 'admin.dashboard.career', methods: ['GET', 'POST'])]
+    public function career(Job $job, Request $request) : Response
+    {
+
+        $form = $this->createForm(JobType::class, $job);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $job = $form->getData();
+            $this->entityManager->persist($job);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Job created successfully');
+        }
+
+        return $this->render('dashboard/career.html.twig', [
+            "form" => $form->createView(),
+            "job" => $job
+        ]);
+
+    }
+
+    #[Route('/dashboard/blog/posts', name: 'admin.dashboard.blog', methods: ['GET', 'POST'])]
+    public function blog(Request $request,UploadFileService $UploadFileService) : Response
+    {
+
+        /** @var User */
+        $user = $this->getUser();
+
+        $posts = $this->entityManager->getRepository(Post::class)->findAll();
+
+        $post = new Post();
+        $form = $this->createForm(PostType::class, $post);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+
+            $tempFile = $form->get('image')->getData();
+            $post = $form->getData();
+            
+            $fileResponse = $UploadFileService->uploadFile($tempFile, 'posts_upload_directory');
+
+            if($fileResponse->getStatus()) {
+                $post->setImage($fileResponse->getFile());
+            } else {
+                $this->addFlash('error', $fileResponse->getMessage());
+                return $this->redirectToRoute('admin.dashboard.blog');
+            }
+
+            $this->entityManager->persist($post);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Post posted successfully');
+        }
+
+        return $this->render('dashboard/blog.html.twig', [
+            "posts" => $posts,
+            "form" => $form->createView(),
+            "active" => "blog",
+            "connected_user" => $user
+        ]);
+
+    }
+
+    #[Route('/dashboard/blog/post/{id}', name: 'admin.dashboard.blog.post', methods: ['GET', 'POST'])]
+    public function post(Post $post, Request $request, UploadFileService $UploadFileService) : Response
+    {
+
+        $form = $this->createForm(PostType::class, $post, [
+            'image_required' => false,
+        ]);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+
+            $tempFile = $form->get('image')->getData();
+            $post = $form->getData();
+            
+            if($tempFile) {
+                $fileResponse = $UploadFileService->uploadFile($tempFile, 'posts_upload_directory');
+
+                if($fileResponse->getStatus()) {
+                    $post->setImage($fileResponse->getFile());
+                } else {
+                    $this->addFlash('error', $fileResponse->getMessage());
+                    return $this->redirectToRoute('admin.dashboard.blog');
+                }
+            }
+
+            $this->entityManager->persist($post);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Post posted successfully');
+        }
+
+        return $this->render('dashboard/post.html.twig', [
+            "post" => $post,
+            "form" => $form->createView(),
+            "active" => "blog"
+        ]);
+
+    }
+
+    #[Route('/dashboard/delete/post/{id}', name: 'admin.dashboard.delete.post', methods: ['GET'])]
+    public function post_delete(Post $post) : Response
+    {
+
+        $this->entityManager->remove($post);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Post deleted successfully');
+
+        return $this->redirectToRoute('admin.dashboard.blog');
+
+    }
+
+    #[Route('/dashboard/delete/career/{id}', name: 'admin.dashboard.delete.career', methods: ['GET'])]
+    public function career_delete(Job $job) : Response
+    {
+
+        $this->entityManager->remove($job);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Job deleted successfully');
+
+        return $this->redirectToRoute('admin.dashboard.careers');
 
     }
 

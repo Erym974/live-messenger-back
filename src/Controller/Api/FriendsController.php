@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[IsGranted('JWT_HEADER_ACCESS')]
+
 class FriendsController extends AbstractController
 {
 
@@ -22,47 +22,68 @@ class FriendsController extends AbstractController
         
     }
 
-    #[Route('/api/friends/{friend?}', name: 'api.friends', methods: ['GET', 'DELETE'])]
-    public function friends(?Friend $friend, Request $request): JsonResponse
+    #[Route('/api/friends/{friend?}', name: 'api.friend.delete', methods: ['DELETE'])]
+    public function friend_delete(?Friend $friend, Request $request): JsonResponse
     {
 
         /** @var User */
         $user = $this->getUser();
 
-        switch($request->getMethod()) {
-            case 'DELETE':
+        /** Get All datas */
+        $params = json_decode($request->getContent(), true);
+        if(!isset($params['friend'])) return $this->responseService->ReturnError(400, "Friends not found");
 
-                $params = json_decode($request->getContent(), true);
-                if(!isset($params['friend'])) return $this->responseService->ReturnError(400, "Friends not found");
-                $friend = $this->em->getRepository(Friend::class)->find($params['friend']);
-                if($friend == null) return $this->responseService->ReturnError(404, "Friend not found");
+        $friend = $this->em->getRepository(Friend::class)->find($params['friend']);
+        if($friend == null) return $this->responseService->ReturnError(404, "Friend not found");
 
-                if($friend->getUser() != $user) return $this->responseService->ReturnError(400, "You're not the friend");
+        if($friend->getUser() != $user) return $this->responseService->ReturnError(400, "You're not the friend");
 
-                /** @var User */
-                $other = $friend->getUser() === $user ? $friend->getFriend() : $friend->getUser();
+        /** @var User */
+        $other = $friend->getUser() === $user ? $friend->getFriend() : $friend->getUser();
 
-                $otherFriend = $other->getFriend($user);
+        $otherFriend = $other->getFriend($user);
 
-                if($otherFriend == null) return $this->responseService->ReturnError(404, "Friend not found");
+        if($otherFriend == null) return $this->responseService->ReturnError(404, "Friend not found");
 
-                $this->em->remove($otherFriend);
-                $this->em->remove($friend);
-                $this->em->flush();
+        $this->em->remove($otherFriend);
+        $this->em->remove($friend);
+        $this->em->flush();
 
-                return $this->responseService->ReturnSuccess(null);
+        return $this->responseService->ReturnSuccess(null);
 
-                break;
-            case 'GET':
+    }
+
+    #[Route('/api/friends/{friend}', name: 'api.friend.get', methods: ['GET'])]
+    public function friend_get(?Friend $friend): JsonResponse
+    {
+
+        /** @var User */
+        $user = $this->getUser();
                 
-                if($friend) {
-                    if($friend->hasUser($user)) return  $this->responseService->ReturnError(400, "You're not the friend");
-                    $result = $friend;
-                } else {
-                    $result = $user->getFriends();
-                }
-                break;
-        }
+        if(!$friend->hasUser($user)) return  $this->responseService->ReturnError(400, "You're not the friend");
+
+        $mutual = $this->em->getRepository(Friend::class)->getMutualFriends($user, $friend->getFriend());
+        $mutual = array_map(function($friend) {
+            return [
+                'id' => $friend->getFriend()->getId(),
+                'fullname' => $friend->getFriend()->getFullname(),
+                'profilePicture' => $friend->getFriend()->getProfilePicture()
+            ];
+        }, $mutual);
+        $friend->setMutual($mutual);
+
+        return $this->responseService->ReturnSuccess($friend, ['groups' => 'user:friend']);
+
+    }
+
+    #[Route('/api/friends', name: 'api.friends.get', methods: ['GET'])]
+    public function friends_get(): JsonResponse
+    {
+
+        /** @var User */
+        $user = $this->getUser();
+
+        $result = $user->getFriends();
 
         $result = array_map(function($friend) use ($user) {
             $mutual = $this->em->getRepository(Friend::class)->getMutualFriends($user, $friend->getFriend());
@@ -80,5 +101,7 @@ class FriendsController extends AbstractController
         return $this->responseService->ReturnSuccess($result, ['groups' => 'user:friend']);
 
     }
+
+
 
 }

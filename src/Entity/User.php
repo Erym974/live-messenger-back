@@ -39,6 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $plainPassword;
 
     #[ORM\Column(type: 'boolean')]
+    #[Groups(['user:read'])]
     private $isVerified = false;
 
     #[ORM\Column(length: 50)]
@@ -72,20 +73,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:user'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'members', fetch: "EAGER")]
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'members', fetch: "LAZY")]
     private Collection $groups;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Setting::class, orphanRemoval: true)]
     #[Groups(['user:read'])]
     private Collection $settings;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Friend::class, orphanRemoval: true, fetch: "EAGER")]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Friend::class, orphanRemoval: true, fetch: "LAZY")]
     private Collection $friends;
 
-    #[ORM\OneToMany(mappedBy: 'emitter', targetEntity: Invitation::class)]
+    #[ORM\OneToMany(mappedBy: 'emitter', targetEntity: Invitation::class, fetch: "LAZY", orphanRemoval: true)]
     private Collection $invitationsSended;
 
-    #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: Invitation::class)]
+    #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: Invitation::class, fetch: "LAZY", orphanRemoval: true)]
     private Collection $invitationsReceived;
 
     public function __construct()
@@ -126,6 +127,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * Get beautiful Role
+     */
+    public function getRole(): string
+    {
+        $roles = $this->roles;
+        foreach ($roles as $role) {
+            if(str_contains(strtolower($role),'admin')) return"Administrator";
+            if(str_contains(strtolower($role),'moderator')) return"Moderator";
+        }
+        return "User";
+    }
+
+    /**
      * @see UserInterface
      */
     public function getRoles(): array
@@ -144,8 +158,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function hasRole(string $role): bool
+    public function hasRole(string $role = "ROLE_USER"): bool
     {
+        // if($role == "ROLE_USER") return true;
         return in_array($role, $this->roles);
     }
 
@@ -244,7 +259,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getProfilePicture(): ?string
     {
-        return "http://localhost:8000/uploads" . $this->profilePicture;
+        return "http://localhost:8000/uploads/users" . $this->profilePicture;
     }
 
     public function setProfilePicture(string $profilePicture): static
@@ -255,7 +270,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getCoverPicture(): ?string
     {
-        return "http://localhost:8000/uploads" . $this->coverPicture;
+        return "http://localhost:8000/uploads/users" . $this->coverPicture;
     }
 
     public function setCoverPicture(string $coverPicture): static

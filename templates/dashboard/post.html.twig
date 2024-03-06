@@ -1,0 +1,112 @@
+{% extends 'dashboard.html.twig' %}
+
+
+{% block title %}Post
+{% endblock %}
+{% block page_main_title %}Post
+{% endblock %}
+
+{% block body %}
+
+	<div class="content w-100">
+
+		<div class="row mb-4">
+
+			<div class="col-12">
+				<div class="card h-100">
+					<div class="post-data">
+						<div class="header p-3 d-flex jcb aic">
+							<h3 class="mb-0">{% trans %}Post information{% endtrans %}</h3>
+						</div>
+						<hr class="mt-0">
+						<div class="px-3">
+							<div class="d-flex jcb aic mb-3">
+								<span>Reference :</span>
+								<span>{{ post.id }}</span>
+							</div>
+							<div class="d-flex jcb aic mb-3">
+								<span>{% trans %}Title{% endtrans %}
+									:</span>
+								<span>{{ post.title }}</span>
+							</div>
+							<hr>
+							<div class="d-flex jcb aic mb-3">
+								<span>{% trans %}Image{% endtrans %}
+									:</span>
+                                <img src="{{ post.image }}" class="img-thumbnail" alt="{{ post.title }}" style="width: 100px">
+							</div>
+							<div class="d-flex jcb aic mb-3">
+								<span>{% trans %}Short description{% endtrans %}
+									:</span>
+								<span>{{ post.shortdescription }}</span>
+							</div>
+							<div class="mb-3">
+								<span>{% trans %}Content{% endtrans %}
+									:</span>
+								<div class="text-dark p-2">{{ post.content|raw }}</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+
+		<div class="df aic jcb">
+			<a href="{{ app.request.headers.get('referer') }}" class="btn btn-outline-primary">{% trans %}Back{% endtrans %}</a>
+			<div class="actions">
+				<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editPost">{% trans %}Edit{% endtrans %}</button>
+				<button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePost">{% trans %}Delete{% endtrans %}</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="editPost" tabindex="-1" aria-labelledby="editPostLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-title" id="editPostLabel">{% trans %}Edit post{% endtrans %}</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					{{ form_start(form, {
+                            attr: {
+                                'id': 'editPostForm'
+                            },
+                        }) }}
+					{{ form_widget(form) }}
+					{{ form_end(form) }}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Close{% endtrans %}</button>
+					<button type="submit" class="btn btn-primary" form="editPostForm">{% trans %}Save change{% endtrans %}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="deletePost" tabindex="-1" aria-labelledby="deletePostLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-title" id="deletePostLabel">{% trans %}Delete post{% endtrans %}</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>{% trans %}Are you sure you want to remove this post{% endtrans %}
+						?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Close{% endtrans %}</button>
+					<a href="{{ path('admin.dashboard.delete.post', { id: post.id }) }}" class="btn btn-danger" form="deletePostForm">{% trans %}Delete{% endtrans %}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+{% endblock %}

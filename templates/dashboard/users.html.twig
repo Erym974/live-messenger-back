@@ -1,37 +1,36 @@
 {% extends 'dashboard.html.twig' %}
 
 
-{% block title %}Utilisateurs
-{% endblock %}
+{% block title %}{% trans %}Users{% endtrans %}{% endblock %}
+{% block page_main_title %}{% trans %}Users{% endtrans %}{% endblock %}
 
 {% block body %}
-<table class="table p-5">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td colspan="2">Larry the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  </tbody>
-</table>
+
+	<section id="users">
+		{% include 'snippets/table.html.twig' ignore missing with {
+        "entity_name": "user",
+        'entities': users,
+        'actions': {
+            "detail": {
+                "icon": "visibility",
+                'route': {
+                    "name": 'admin.dashboard.user',
+                    'arguments' : {
+                        'entity': 'id'
+                    }
+                },
+            }
+        },
+        'params': {
+            'Email': 'email',
+            'Fullname': 'fullname',
+            'Rôle': 'role',
+            'Created At': {
+                'key': 'createdAt',
+                'type': 'date',
+            }
+            },
+        } %}
+	</section>
+
 {% endblock %}
