@@ -1,0 +1,2 @@
+password_requirements: Password must be at least 8 characters and contain a special character
+password_mismatch: Password does not match

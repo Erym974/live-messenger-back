@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[IsGranted('JWT_HEADER_ACCESS')]
+
 class FriendsController extends AbstractController
 {
 

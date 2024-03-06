@@ -19,9 +19,7 @@ class LocaleSubscriber implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event)
     {
         $request = $event->getRequest();
-        if (!$request->hasPreviousSession()) {
-            return;
-        }
+        if (!$request->hasPreviousSession()) return;
 
         // On vérifie si la langue est passée en paramètre de l'URL
         if ($locale = $request->query->get('_locale')) {

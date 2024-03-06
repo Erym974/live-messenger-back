@@ -3,11 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\File;
+use App\Entity\Group;
 use App\Entity\Job;
+use App\Entity\LegalNotice;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Form\JobType;
+use App\Form\LegalNoticeType;
 use App\Form\PostType;
+use App\Service\GroupService;
 use App\Service\UploadFileService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -91,6 +95,89 @@ class DashboardController extends AbstractController
 
     }
 
+    #[Route('/dashboard/terms', name: 'admin.dashboard.terms', methods: ['GET', 'POST'])]
+    public function terms(Request $request) : Response
+    {
+
+        $locale = $request->query->get('locale', 'fr');
+
+        switch($locale) {
+            case 'english':
+            case 'en':
+                $termLocale = "English";
+                $locale = LegalNotice::ENGLISH;
+                break;
+            default:
+                $termLocale = "Français";
+                $locale = LegalNotice::FRENCH;
+                break;
+        }
+
+        $legalNotices = $this->entityManager->getRepository(LegalNotice::class)->findOneBy(['type' => LegalNotice::TERMS, 'locale' => $locale]);
+
+        if(!$legalNotices) {
+            $legalNotices = new LegalNotice();
+            $legalNotices->setType(LegalNotice::TERMS);
+            $legalNotices->setLocale($locale);
+        }
+
+        $form = $this->createForm(LegalNoticeType::class, $legalNotices);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $legalNotices = $form->getData();
+            $this->entityManager->persist($legalNotices);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Legal notice updated successfully');
+        }
+
+        return $this->render('dashboard/terms.html.twig', [
+            "form" => $form->createView(),
+            "legalNotice_locale" => $termLocale,
+        ]);
+    }
+
+    #[Route('/dashboard/privacy', name: 'admin.dashboard.privacy', methods: ['GET', 'POST'])]
+    public function privacy(Request $request) : Response
+    {
+        $locale = $request->query->get('locale', 'fr');
+
+        switch($locale) {
+            case 'english':
+            case 'en':
+                $termLocale = "English";
+                $locale = LegalNotice::ENGLISH;
+                break;
+            default:
+                $termLocale = "Français";
+                $locale = LegalNotice::FRENCH;
+                break;
+        }
+
+        $legalNotices = $this->entityManager->getRepository(LegalNotice::class)->findOneBy(['type' => LegalNotice::PRIVACY, 'locale' => $locale]);
+
+        if(!$legalNotices) {
+            $legalNotices = new LegalNotice();
+            $legalNotices->setType(LegalNotice::PRIVACY);
+            $legalNotices->setLocale($locale);
+        }
+
+        $form = $this->createForm(LegalNoticeType::class, $legalNotices);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $legalNotices = $form->getData();
+            $this->entityManager->persist($legalNotices);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Legal notice updated successfully');
+        }
+
+        return $this->render('dashboard/privacy.html.twig', [
+            "form" => $form->createView(),
+            "legalNotice_locale" => $termLocale,
+        ]);
+    }
+
     #[Route('/dashboard/careers/{id}', name: 'admin.dashboard.career', methods: ['GET', 'POST'])]
     public function career(Job $job, Request $request) : Response
     {
@@ -112,10 +199,12 @@ class DashboardController extends AbstractController
 
     }
 
-
     #[Route('/dashboard/blog/posts', name: 'admin.dashboard.blog', methods: ['GET', 'POST'])]
     public function blog(Request $request,UploadFileService $UploadFileService) : Response
     {
+
+        /** @var User */
+        $user = $this->getUser();
 
         $posts = $this->entityManager->getRepository(Post::class)->findAll();
 
@@ -145,7 +234,8 @@ class DashboardController extends AbstractController
         return $this->render('dashboard/blog.html.twig', [
             "posts" => $posts,
             "form" => $form->createView(),
-            "active" => "blog"
+            "active" => "blog",
+            "connected_user" => $user
         ]);
 
     }
@@ -211,6 +301,5 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('admin.dashboard.careers');
 
     }
-
 
 }

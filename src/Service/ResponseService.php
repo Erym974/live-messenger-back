@@ -4,7 +4,6 @@ namespace App\Service;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Service\AbstractService;
-use Symfony\Component\HttpFoundation\Cookie;
 
 class ResponseService extends AbstractService {
 
@@ -20,7 +19,7 @@ class ResponseService extends AbstractService {
         return new JsonResponse(
             [
                 "status" => false,
-                "message" => $message,
+                "message" => $this->translator->trans($message),
             ],
             $code,
             ['Content-Type' => "application/json"]

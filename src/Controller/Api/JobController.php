@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Job;
+use App\Repository\JobRepository;
 use App\Service\ResponseService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,15 +14,15 @@ use Symfony\Component\HttpFoundation\Request;
 class JobController extends AbstractController
 {
 
-    public function __construct(private EntityManagerInterface $em, private ResponseService $responseService)
+    public function __construct(private ResponseService $responseService)
     {
         
     }
 
     #[Route('api/jobs', name: 'api.jobs', methods: ['GET'])]
-    public function jobs(Request $request): JsonResponse
+    public function jobs(JobRepository $jobRepository): JsonResponse
     {
-        $jobs = $this->em->getRepository(Job::class)->findAll();
+        $jobs = $jobRepository->findAll();
         return $this->responseService->ReturnSuccess($jobs, ['groups' => 'jobs:read']);
     }
 

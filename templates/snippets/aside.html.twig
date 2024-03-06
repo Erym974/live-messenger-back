@@ -41,6 +41,19 @@
                 </span>
                 <h3>{% trans %}Blog{% endtrans %}</h3>
             </a>
+            <hr>
+            <a href="{{ path('admin.dashboard.terms') }}" class="{{ active == "terms" ? "active" }}">
+                <span class="material-icons-sharp">
+                    gavel
+                </span>
+                <h3>{% trans %}Terms{% endtrans %}</h3>
+            </a>
+            <a href="{{ path('admin.dashboard.privacy') }}" class="{{ active == "privacy" ? "active" }}">
+                <span class="material-icons-sharp">
+                    vpn_lock
+                </span>
+                <h3>{% trans %}Privacy{% endtrans %}</h3>
+            </a>
             {% endif %}
 
         </div>

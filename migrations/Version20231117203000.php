@@ -20,8 +20,8 @@ final class Version20231117203000 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE friend ADD conversation_id INT NOT NULL');
-        $this->addSql('ALTER TABLE friend ADD CONSTRAINT FK_55EEAC619AC0396 FOREIGN KEY (conversation_id) REFERENCES `group` (id)');
+        $this->addSql('ALTER TABLE friend ADD conversation_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE friend ADD CONSTRAINT FK_55EEAC619AC0396 FOREIGN KEY (conversation_id) REFERENCES `group` (id) ON DELETE SET NULL');
         $this->addSql('CREATE INDEX IDX_55EEAC619AC0396 ON friend (conversation_id)');
     }
 

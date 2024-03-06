@@ -23,15 +23,14 @@ class Group
     #[Groups(['user:groups', 'group:read'])]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'groups', fetch: "EAGER")]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'groups', fetch: "LAZY")]
     #[Groups(['group:read'])]
     private Collection $members;
 
-    #[ORM\OneToMany(mappedBy: 'conversation', fetch: "EAGER", targetEntity: Message::class, orphanRemoval: true)]
-    // #[Groups(['group:read'])]
+    #[ORM\OneToMany(mappedBy: 'conversation', fetch: "LAZY", targetEntity: Message::class, orphanRemoval: true)]
     private Collection $messages;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(cascade: ['persist'])]
     #[Groups(['user:groups', 'group:read'])]
     private ?Message $lastMessage = null;
 
@@ -43,7 +42,7 @@ class Group
     #[Groups(['user:groups', 'group:read'])]
     private ?string $emoji = "👍";
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(fetch: "LAZY")]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['user:groups', 'group:read'])]
     private ?User $administrator = null;

@@ -39,6 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $plainPassword;
 
     #[ORM\Column(type: 'boolean')]
+    #[Groups(['user:read'])]
     private $isVerified = false;
 
     #[ORM\Column(length: 50)]
@@ -72,20 +73,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:user'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'members', fetch: "EAGER")]
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'members', fetch: "LAZY")]
     private Collection $groups;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Setting::class, orphanRemoval: true)]
     #[Groups(['user:read'])]
     private Collection $settings;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Friend::class, orphanRemoval: true, fetch: "EAGER")]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Friend::class, orphanRemoval: true, fetch: "LAZY")]
     private Collection $friends;
 
-    #[ORM\OneToMany(mappedBy: 'emitter', targetEntity: Invitation::class)]
+    #[ORM\OneToMany(mappedBy: 'emitter', targetEntity: Invitation::class, fetch: "LAZY", orphanRemoval: true)]
     private Collection $invitationsSended;
 
-    #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: Invitation::class)]
+    #[ORM\OneToMany(mappedBy: 'receiver', targetEntity: Invitation::class, fetch: "LAZY", orphanRemoval: true)]
     private Collection $invitationsReceived;
 
     public function __construct()

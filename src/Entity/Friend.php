@@ -29,7 +29,7 @@ class Friend
     private ?\DateTimeImmutable $since = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['user:friend', 'user:profile'])]
     private ?Group $conversation = null;
 

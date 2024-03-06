@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\DTO\GroupDTO;
 use App\Entity\Group;
 use App\Entity\User;
 use App\Service\GroupService;
@@ -14,8 +15,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 
-#[isGranted('JWT_HEADER_ACCESS')]
 class GroupsController extends AbstractController
 {
 
@@ -104,6 +105,7 @@ class GroupsController extends AbstractController
     #[Route('api/groups', name: 'api.groups.post', methods: ['POST'])]
     public function groups_post(Request $request): JsonResponse
     {
+
         /** @var User */
         $user = $this->getUser();
 
@@ -133,6 +135,7 @@ class GroupsController extends AbstractController
 
         return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
     }
+
 
     /** Récupération de tout les groupes */
     #[Route('api/groups', name: 'api.groups.get', methods: ['GET'])]

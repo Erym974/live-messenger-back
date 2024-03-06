@@ -39,12 +39,9 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
             new UserBadge($email, function($userIdentifier) {
                 /** @var User */
                 $foundUser = $this->em->getRepository(User::class)->findOneBy(['email' => $userIdentifier]);
-                if (!$foundUser) {
-                    throw new UserNotFoundException();
-                }
-                if (!$foundUser->hasRole('ROLE_ADMIN')) {
-                    throw new UserNotFoundException();
-                }
+
+                if (!$foundUser) throw new UserNotFoundException();
+                // if (!$foundUser->hasRole('ROLE_ADMIN')) throw new UserNotFoundException();
 
                 return $foundUser;
             }),

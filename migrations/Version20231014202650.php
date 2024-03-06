@@ -21,7 +21,7 @@ final class Version20231014202650 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE message ADD reply_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE message ADD CONSTRAINT FK_B6BD307F8A0E4E7F FOREIGN KEY (reply_id) REFERENCES message (id)');
+        $this->addSql('ALTER TABLE message ADD CONSTRAINT FK_B6BD307F8A0E4E7F FOREIGN KEY (reply_id) REFERENCES message (id) ON DELETE SET NULL');
         $this->addSql('CREATE INDEX IDX_B6BD307F8A0E4E7F ON message (reply_id)');
     }
 

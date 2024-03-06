@@ -17,7 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[IsGranted('JWT_HEADER_ACCESS')]
+
 class UserController extends AbstractController
 {
 
@@ -37,19 +37,19 @@ class UserController extends AbstractController
 
         $file = $request->files->get('file');
 
-        if ($params == null) $this->responseService->ReturnError(400, "Missing parameters");
-        if ($file == null) $this->responseService->ReturnError(400, "Missing file parameters");
+        if ($params == null) return $this->responseService->ReturnError(400, "Missing parameters");
+        if ($file == null) return $this->responseService->ReturnError(400, "Missing file parameters");
 
         if ($params['picture'] != "profile" && $params['picture'] != "cover") {
-            $this->responseService->ReturnError(400, "Invalid parameters");
+            return $this->responseService->ReturnError(400, "Invalid parameters");
         }
 
         if ($file->getMimeType() != "image/jpeg" && $file->getMimeType() != "image/png") {
-            $this->responseService->ReturnError(400, "Invalid file type");
+            return $this->responseService->ReturnError(400, "Invalid file type");
         }
 
         if ($file->getSize() > 1000000) {
-            $this->responseService->ReturnError(400, "File is too big");
+            return $this->responseService->ReturnError(400, "File is too big");
         }
 
         $filename = md5(uniqid()) . "." . $file->guessExtension();
@@ -115,76 +115,10 @@ class UserController extends AbstractController
     #[Route('api/users/me', name: 'api.users.me.get', methods: ['GET'])]
     public function me_get(Request $request): JsonResponse
     {
-
         /** @var User */
         $user = $this->getUser();
 
-        // If we edit the user data
-        if ($request->getMethod() == "PATCH") {
-
-            $params = json_decode($request->getContent(), true);
-
-            if ($params == null) $this->responseService->ReturnError(400, "Missing parameters");
-
-            $firstname = $params['firstname'] ?? null;
-            $lastname = $params['lastname'] ?? null;
-            $biography = $params['biography'] ?? null;
-            $email = $params['email'] ?? null;
-
-            if (strlen($biography) > 50) $this->responseService->ReturnError(400, "Biography is too long");
-
-
-            if ($email != null) {
-                $user_email = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
-                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $this->responseService->ReturnError(400, "Invalid format for email");
-                if ($user_email != null) $this->responseService->ReturnError(400, "Email already used");
-            }
-
-            if ($firstname != null) $user->setFirstname($firstname);
-            if ($lastname != null) $user->setLastname($lastname);
-            if ($biography != null) $user->setBiography($biography);
-            if ($email != null) $user->setEmail($email);
-
-            $this->em->persist($user);
-            $this->em->flush();
-        }
-
-        // If we edit file of user
-        if ($request->getMethod() == "POST") {
-
-            $params = json_decode($request->getContent(), true);
-            if (!$params) $params = $request->request->all();
-
-            $file = $request->files->get('file');
-
-            if ($params == null) $this->responseService->ReturnError(400, "Missing parameters");
-            if ($file == null) $this->responseService->ReturnError(400, "Missing file parameters");
-
-            if ($params['picture'] != "profile" && $params['picture'] != "cover") {
-                $this->responseService->ReturnError(400, "Invalid parameters");
-            }
-
-            if ($file->getMimeType() != "image/jpeg" && $file->getMimeType() != "image/png") {
-                $this->responseService->ReturnError(400, "Invalid file type");
-            }
-
-            if ($file->getSize() > 1000000) {
-                $this->responseService->ReturnError(400, "File is too big");
-            }
-
-            $filename = md5(uniqid()) . "." . $file->guessExtension();
-            $file->move($this->getParameter('users_upload_directory'), $filename);
-
-            if ($params['picture'] == "profile") {
-                $user->setProfilePicture("/" . $filename);
-            } else {
-                $user->setCoverPicture("/" . $filename);
-            }
-
-            $this->em->persist($user);
-            $this->em->flush();
-        }
-
+        
         $user->setSettings($this->settingService->fetchSettings($user));
 
         return $this->responseService->ReturnSuccess([

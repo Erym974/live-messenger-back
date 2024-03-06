@@ -13,13 +13,25 @@ security:
         ROLE_ADMIN:       ROLE_MODERATOR
         ROLE_MODERATOR: ROLE_USER
     firewalls:
+        login:
+            pattern: ^/api/auth/login
+            stateless: true
+            json_login:
+                check_path: api_auth_login
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        api:
+            pattern:   ^/api/(?!(blog/posts$|jobs$|auth$|legal-notices/.*$)).*
+            stateless: true
+            jwt: ~
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
             provider: app_user_provider
-            entry_point: App\Security\AuthenticationEntryPoint
             custom_authenticator: App\Security\AppAuthenticator
             logout:
                 path: auth.logout
@@ -44,8 +56,9 @@ security:
         - { path: ^/auth, roles: PUBLIC_ACCESS }
         - { path: ^/api/auth, roles: PUBLIC_ACCESS }
         - { path: ^/api/jobs, roles: PUBLIC_ACCESS }
-        - { path: ^/api/blog, roles: PUBLIC_ACCESS }
-        - { path: ^/api/*, roles: JWT_HEADER_ACCESS }
+        - { path: ^/api/blog/posts, roles: PUBLIC_ACCESS }
+        - { path: ^/api/legal-notices, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: ROLE_USER }
         - { path: ^/dashboard, roles: ROLE_MODERATOR }
 
 when@test:

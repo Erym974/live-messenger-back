@@ -12,45 +12,23 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Service\JWT;
 use App\Service\ResponseService;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
+use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
+use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
+use Symfony\Component\Mime\Address;
 
 class AuthController extends AbstractController
 {
 
-    public function __construct(private EntityManagerInterface $em, private UserPasswordHasherInterface $hasher, private ResponseService $responseService)
+    use ResetPasswordControllerTrait;
+
+    public function __construct(private TranslatorInterface $translator, private MailerInterface $mailer, private ResetPasswordHelperInterface $resetPasswordHelper, private EntityManagerInterface $em, private UserPasswordHasherInterface $hasher, private ResponseService $responseService)
     {
         
-    }
-
-    #[Route('api/auth/login', name: 'api.auth.login', methods: ['POST'])]
-    public function login(Request $request): JsonResponse
-    {
-
-        $parameters = json_decode($request->getContent(), true);
-
-        $email = $parameters['email'] ?? null;
-        $password = $parameters['password'] ?? null;
-        $remember = $parameters['remember'] ?? false;
-
-        if ($email == null || $password == null) return $this->responseService->ReturnError(400, "Missing parameters");
-
-        /** @var User */
-        $user = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
-
-        $isValid = false;
-
-        if($user != null) $isValid = $this->hasher->isPasswordValid($user, $password);
-
-        if ($user == null || !$isValid) return $this->responseService->ReturnError(404, "No account was found with these credentials");
-
-        $token = JWT::generate($remember ? 86400 * 7 : 7200, [
-            "id" => $user->getId(),
-            "email" => $user->getEmail(),
-        ]);
-
-        return $this->responseService->ReturnSuccess([
-            "token" => $token,
-            "user" => $user
-        ], ['groups' => 'user:read']);
     }
 
     #[Route('api/auth/register', name: 'api.auth.register', methods: ['POST'])]
@@ -80,17 +58,13 @@ class AuthController extends AbstractController
 
         if (!filter_var($datas['email'], FILTER_VALIDATE_EMAIL)) return $this->responseService->ReturnError(400, "Invalid email");
 
-        if (!preg_match('/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $datas['password'])) {
-            
-        }
+        if (!preg_match('/^(?=.*[^\w\s]).{8,}$/', $datas['password'])) return $this->responseService->ReturnError(400, "password_requirements");
 
-        if($datas['password'] != $datas['password2']) return $this->responseService->ReturnError(400, "Password does not match");
+        if($datas['password'] != $datas['password2']) return $this->responseService->ReturnError(400, "password_mismatch");
 
         $user = $this->em->getRepository(User::class)->findOneBy(['email' => $datas['email']]);
 
         if ($user != null)  return $this->responseService->ReturnError(400, "Email already used");
-
-        return $this->responseService->ReturnError(500, $e->getMessage());
 
         $user = new User();
         $user->setFirstname($datas['firstname'])
@@ -105,28 +79,173 @@ class AuthController extends AbstractController
             return $this->responseService->ReturnError(500, $e->getMessage());
         }
 
-        return $this->responseService->ReturnSuccess($user->getId());
+        $emailSended = $this->processSendingActiveAccountEmail($user);
+
+        return $this->responseService->ReturnSuccess(["user" => $user->getId(), "email" => $emailSended]);
     }
 
-    #[Route('api/auth/refresh', name: 'api.auth.refresh', methods: ['POST'])]
-    public function refresh(Request $request): JsonResponse
+    /*** RESET PASSWORD */
+
+    #[Route('api/auth/reset-password', name: 'api.auth.reset-password', methods: ['POST'])]
+    public function resetPasswordRequest(Request $request, MailerInterface $mailer, TranslatorInterface $translator): JsonResponse
     {
 
-        $authorization = $request->headers->get('Authorization');
-        $jwt = str_replace('Bearer ', '', $authorization);
-        
-        if(!JWT::identify($jwt) || JWT::isExpired($jwt)) return $this->responseService->ReturnError(400, "Bad credentials");
+        $params = json_decode($request->getContent(), true);
 
-        $header = JWT::getHeader($jwt);
-        $payload = JWT::getPayload($jwt);
+        $email = $params['email'] ?? null;
+        if ($email === null) return $this->responseService->ReturnError(400, "Missing parameters");
 
-        $token = JWT::generate($payload, $header);
+        $user = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
+        if ($user === null) return $this->responseService->ReturnSuccess(200, []);
 
-        return $this->responseService->ReturnSuccess([
-            "status" => true,
-            "token" => $token
-        ]);
-        
+        $result = $this->processSendingPasswordResetEmail(
+            $email,
+            $mailer,
+            $translator
+        );
+        if($result) return $this->responseService->ReturnSuccess(200, []);
+        return $this->responseService->ReturnSuccess(200, []);
+
     }
+
+    #[Route('api/auth/reset-password/reset', name: 'api.auth.reset-password.reset', methods: ['POST'])]
+    public function resetPassword(Request $request, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator): JsonResponse
+    {
+
+        $params = json_decode($request->getContent(), true);
+
+        $token = $params['token'] ?? null;
+        if ($token === null) return $this->responseService->ReturnError(400, "Missing token");
+
+        $password = $params['password'] ?? null;
+        if ($password === null) return $this->responseService->ReturnError(400, "Missing password");
+
+        $confirmPassword = $params['confirmPassword'] ?? null;
+        if ($confirmPassword === null) return $this->responseService->ReturnError(400, "Missing confirm password");
+
+        if (!preg_match('/^(?=.*[^\w\s]).{8,}$/', $password)) return $this->responseService->ReturnError(400, "password_requirements");
+
+        try {
+            $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
+        } catch (ResetPasswordExceptionInterface $e) {
+            return $this->responseService->ReturnError(401, "Invalid token");
+        }
+
+        if ($password !== $confirmPassword) return $this->responseService->ReturnError(400, "password_mismatch");
+
+        $this->resetPasswordHelper->removeResetRequest($token);
+
+        $encodedPassword = $passwordHasher->hashPassword(
+            $user,
+            $password
+        );
+
+        $user->setPassword($encodedPassword);
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return $this->responseService->ReturnSuccess(200, []);
+
+    }
+
+    private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer): bool
+    {
+
+        $user = $this->em->getRepository(User::class)->findOneBy([
+            'email' => $emailFormData,
+        ]);
+
+        try {
+            $resetToken = $this->resetPasswordHelper->generateResetToken($user);
+        } catch (ResetPasswordExceptionInterface $e) {
+            return false;
+        }
+
+        $email = (new TemplatedEmail())
+            ->from(new Address('reset-password@swiftchat.fr', '[SwiftChat] Reset Password'))
+            ->to($user->getEmail())
+            ->subject('Your password reset request')
+            ->htmlTemplate('mails/reset-password.html.twig')
+            ->context([
+                'resetToken' => $resetToken,
+                'front_end' => $this->getParameter('front_end'),
+            ])
+        ;
+
+        $mailer->send($email);
+        return true;
+    }
+
+    /*** ACTIVE ACCOUNT */
+
+    #[Route('api/auth/active-account', name: 'api.auth.active-account', methods: ['POST'])]
+    public function activeAccount(Request $request, TranslatorInterface $translator): JsonResponse
+    {
+
+        $params = json_decode($request->getContent(), true);
+        
+        $token = $params['token'] ?? null;
+        if ($token === null) return $this->responseService->ReturnError(400, "Missing token");
+
+        if (!JWT::identify($token)) return $this->responseService->ReturnError(400, "Invalid token");
+        if (JWT::isExpired($token)) return $this->responseService->ReturnError(400, "Token expired");
+        
+        $payload = JWT::getPayload($token);
+        /** @var User */
+        $user = $this->em->getRepository(User::class)->find($payload['id']);
+
+        if ($user === null) return $this->responseService->ReturnError(400, "User not found");
+        $user->setIsVerified(true);
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return $this->responseService->ReturnSuccess(200, []);
+
+    }
+
+    #[Route('api/auth/active-account/request', name: 'api.auth.active-account.request', methods: ['POST'])]
+    public function activeAccountRequest(Request $request, TranslatorInterface $translator): JsonResponse
+    {
+            
+            $params = json_decode($request->getContent(), true);
+    
+            $email = $params['email'] ?? null;
+            if ($email === null) return $this->responseService->ReturnError(400, "Missing email");
+    
+            $user = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
+            if ($user === null) return $this->responseService->ReturnError(400, "User not found");
+
+            $emailSended = $this->processSendingActiveAccountEmail($user);
+
+            if(!$emailSended) return $this->responseService->ReturnError(500, "Error while sending email");
+            return $this->responseService->ReturnSuccess(200, []);
+    
+    }
+
+    private function processSendingActiveAccountEmail(User $user) : bool
+    {
+
+        try {
+            $email = (new TemplatedEmail())
+            ->from(new Address('registration@swiftchat.fr', '[SwiftChat] Active Account'))
+            ->to($user->getEmail())
+            ->subject('Active your account')
+            ->htmlTemplate('mails/active-account.html.twig')
+            ->context([
+                'front_end' => $this->getParameter('front_end'),
+                'token' => JWT::generate(900, ['id' => $user->getId()])
+            ])
+            ;
+
+            $this->mailer->send($email);
+
+            return true;
+        } catch(\Exception $e) {
+            return false;
+        }
+
+    }
+
+
 
 }
