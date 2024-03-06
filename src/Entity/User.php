@@ -55,11 +55,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['user:read', 'user:public', 'user:friend', 'user:groups', 'group:read', 'messages:read', 'invitation:read'])]
-    private ?string $profilePicture = "/default_profile_picture.png";
+    private ?string $profilePicture;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['user:read', 'user:public', 'user:friend'])]
-    private ?string $coverPicture = "/default_cover_picture.png";
+    private ?string $coverPicture;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['user:read', 'user:public', 'user:friend'])]
@@ -259,7 +259,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getProfilePicture(): ?string
     {
-        return "http://localhost:8000/uploads/users" . $this->profilePicture;
+        return $this->profilePicture;
     }
 
     public function setProfilePicture(string $profilePicture): static
@@ -270,7 +270,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getCoverPicture(): ?string
     {
-        return "http://localhost:8000/uploads/users" . $this->coverPicture;
+        return $this->coverPicture;
     }
 
     public function setCoverPicture(string $coverPicture): static

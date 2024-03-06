@@ -8,6 +8,9 @@ parameters:
     default_locale: 'fr'
     front_end: '%env(FRONTEND_URL)%'
     default_extension: '%env(URL_EXTENSION)%'
+    ressources_url: '%env(RESSOURCES_URL)%'
+    default_profile_picture: '%env(RESSOURCES_URL)%/users/default_profile_picture.png'
+    default_cover_picture: '%env(RESSOURCES_URL)%/users/default_cover_picture.png'
     app.locales: [
         fr:  Français,
         en:  English,

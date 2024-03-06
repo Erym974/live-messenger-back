@@ -14,46 +14,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class UserController extends AbstractController
 {
 
-    public function __construct(private EntityManagerInterface $em)
-    {
-    }
-
     /**
      * 
      * Page du compte utilisateur
      * 
      */
-    #[Route('/user/my-account', name: 'user.my-account')]
-    public function myAccount(Request $request): Response
+    #[Route('/user/my-account', name: 'user.my-account', host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
+    public function myAccount(): Response
     {
-        if($request->getMethod() == "POST"){
-            $type = $request->request->get('form');
-
-            /** @var User */
-            $user = $this->getUser();
-
-            switch($type){
-                case 'profile-picture':
-                    // $file = $request->files->get('profile-picture');
-
-                    // $oldMedia = $user->getProfilePicture();
-                    // if($oldMedia)$this->em->remove($oldMedia);
-
-                    // $media = new Media();
-                    // $media->setMediaFile($file);
-                    // $user->setProfilePicture($media);
-                    
-                    // $this->em->persist($media);
-                    // $this->em->persist($user);
-                    // $this->em->flush();
-
-                    // $this->addFlash('success', 'Your profile picture has been edit');
-                    return $this->redirectToRoute('user.my-account');
-                break;
-            }
-            $this->addFlash('success', 'Votre profil a bien été mis à jour');
-        }
-
         return $this->render('dashboard/my-account.html.twig');
     }
 

@@ -15,11 +15,7 @@
                 <div class="d-flex fc aic jcc my-3 gap-2 h-100">
 
                   <div class="position-relative">
-                    {% if user.profilepicture != null %}
                       <img src="{{ user.profilepicture }}" class="rounded-circle" alt="" height="130" width="130">
-                    {% else %}
-                      <img src="{{ asset(default_profile_picture) }}" class="rounded-circle" alt="" height="130" width="130">
-                    {% endif %}
                   </div>
                   <input type="file" class="d-none" name="profile-picture" id="profile-picture">
                   <input type="hidden" name="form" value="profile-picture">

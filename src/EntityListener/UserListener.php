@@ -6,12 +6,13 @@ use App\Entity\Meta;
 use App\Entity\Setting;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserListener
 {
 
-    public function __construct(private UserPasswordHasherInterface $hasher, private EntityManagerInterface $em)
+    public function __construct(private UserPasswordHasherInterface $hasher, private EntityManagerInterface $em, private ParameterBagInterface $paramater)
     {
         
     }
@@ -20,6 +21,8 @@ class UserListener
     {
 
         $this->createSetting($user);
+        $user->setProfilePicture($this->paramater->get('default_profile_picture'));
+        $user->setCoverPicture($this->paramater->get('default_cover_picture'));
 
         if($user->getFriendCode() == null) $user->setFriendCode($this->generateFriendCode());
         $this->encodePassword($user);

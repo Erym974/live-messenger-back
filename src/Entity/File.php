@@ -53,7 +53,7 @@ class File
 
     public function getPath(): ?string
     {
-        return "http://localhost:8000/uploads/" . $this->parent . "" . $this->path;
+        return $this->parent . "" . $this->path;
     }
 
     public function setPath(string $path): static
@@ -100,7 +100,6 @@ class File
     public function setParent(string $parent): static
     {
         $this->parent = $parent;
-
         return $this;
     }
 }
