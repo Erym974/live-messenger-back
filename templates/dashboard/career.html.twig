@@ -1,0 +1,137 @@
+{% extends "dashboard.html.twig" %}
+{% set active = "careers" %}
+
+{% block title %}{% trans %}Information about this job{% endtrans %}{% endblock %}
+{% block page_main_title %}{% trans %}Information about this job{% endtrans %}{% endblock %}
+
+{% block body %}
+
+    <div class="content w-100">
+
+      <div class="row mb-4">
+
+          <div class="col-12">
+            <div class="card h-100">
+              <div class="job-data">
+                  <div class="header p-3 d-flex jcb aic">
+                    <h3 class="mb-0">{% trans %}Job information{% endtrans %}</h3>
+                  </div>
+                  <hr class="mt-0">
+                  <div class="px-3">
+                    <div class="d-flex jcb aic mb-3">
+                      <span>Reference :</span>
+                      <span >{{ job.id }}</span>
+                    </div>
+                    <div class="d-flex jcb aic mb-3">
+                      <span>{% trans %}Title{% endtrans %} :</span>
+                      <span >{{ job.title }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex jcb aic mb-3">
+                      <span>{% trans %}Location{% endtrans %} :</span>
+                      <span >{{ job.location }}</span>
+                    </div>
+                    <div class="d-flex jcb aic mb-3">
+                      <span>{% trans %}Short description{% endtrans %} :</span>
+                      <span >{{ job.shortdescription }}</span>
+                    </div>
+                    <div class="mb-3">
+                      <span>{% trans %}Long description{% endtrans %} :</span>
+                      <p class="text-dark p-2" >{{ job.longdescription }}</p>
+                    </div>
+                    <div class="mb-3">
+                      <span>{% trans %}Requirements{% endtrans %} :</span>
+                      <ul>
+                        {% for requirement in job.requirements %}
+                        <li class="list-group-item text-dark">{{ requirement }}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+
+                </div>
+              </div>
+
+          </div>
+
+      </div>
+
+    </div>
+
+  <div class="df aic jcb">
+    <a href="{{ app.request.headers.get('referer') }}" class="btn btn-outline-primary">{% trans %}Back{% endtrans %}</a>
+    <div class="actions">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editJob">{% trans %}Edit{% endtrans %}</button>
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteJob">{% trans %}Delete{% endtrans %}</button>
+    </div>
+  </div>
+
+  <div class="modal fade" id="editJob" tabindex="-1" aria-labelledby="editJobLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="editJobLabel">{% trans %}Edit job{% endtrans %}</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {{ form_start(form, {
+                attr: {
+                    'id': 'editJobForm'
+                },
+            }) }}
+          {{ form_row(form.title) }}
+          {{ form_row(form.category) }}
+          {{ form_row(form.location) }}
+          {{ form_row(form.short_description) }}
+          {{ form_row(form.long_description) }}
+                        <div class="mb-3" {{ stimulus_controller('requirements') }}>
+                            <label for="requirement-fields-label" class="form-label">Requirements</label>
+                            <ul id="requirement-fields-list" class="p-0" data-prototype="{{ form_widget(form.requirements.vars.prototype)|e }}" data-index="{{ form.requirements|length }}">
+                                {% for index, requirementField in form.requirements %}
+                                    <li class="list-group-item mb-2">
+                                        <div class="row">
+                                            {{ form_row(requirementField, {
+                                                'row_attr': {
+                                                    'class': 'mb-0 col-md-10'
+                                                }
+                                            
+                                            }) }}
+                                            <button type="button" class="btn btn-danger requirement-fields-remove col-md-2">Remove</button>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <div class="df aic jce">
+                                <button type="button" class="btn btn-secondary requirement-fields-add df aic jcc gap-2"><span class="material-icons-sharp">add</span>{% trans %}Add a requirement{% endtrans %}</button>
+                            </div>
+                        </div>
+          {{ form_end(form) }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Close{% endtrans %}</button>
+          <button type="submit" class="btn btn-primary" form="editJobForm">{% trans %}Save changes{% endtrans %}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="deleteJob" tabindex="-1" aria-labelledby="deleteJobLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="deleteJobLabel">{% trans %}Delete job{% endtrans %}</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>{% trans %}Are you sure you want to remove this job{% endtrans %} ?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Close{% endtrans %}</button>
+          <a href="{{ path('admin.dashboard.delete.career', { id: job.id }) }}" class="btn btn-danger" form="deleteJobForm">{% trans %}Delete{% endtrans %}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+{% endblock body %}

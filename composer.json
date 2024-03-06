@@ -11,24 +11,38 @@
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.16",
+        "lcobucci/jwt": "^4.0",
         "lexik/jwt-authentication-bundle": "^2.18",
         "nelmio/cors-bundle": "^2.3",
         "sensio/framework-extra-bundle": "^6.2",
-        "symfony/console": "6.1.*",
-        "symfony/dotenv": "6.1.*",
+        "symfony/console": "6.3.*",
+        "symfony/dotenv": "6.3.*",
         "symfony/flex": "^2",
-        "symfony/framework-bundle": "6.1.*",
-        "symfony/password-hasher": "6.1.*",
-        "symfony/runtime": "6.1.*",
-        "symfony/serializer": "6.1.*",
-        "symfony/twig-bundle": "6.1.*",
-        "symfony/validator": "6.1.*",
+        "symfony/form": "6.3.*",
+        "symfony/framework-bundle": "6.3.*",
+        "symfony/http-client": "6.3.*",
+        "symfony/mailer": "6.3.*",
+        "symfony/messenger": "6.3.*",
+        "symfony/password-hasher": "6.3.*",
+        "symfony/runtime": "6.3.*",
+        "symfony/serializer": "6.3.*",
+        "symfony/stimulus-bundle": "^2.14",
+        "symfony/translation": "6.3.*",
+        "symfony/twig-bundle": "6.3.*",
+        "symfony/validator": "6.3.*",
         "symfony/webpack-encore-bundle": "^1.17",
-        "symfony/yaml": "6.1.*",
+        "symfony/yaml": "6.3.*",
+        "symfonycasts/reset-password-bundle": "^1.20",
+        "symfonycasts/verify-email-bundle": "^1.16",
+        "twig/extra-bundle": "^2.12|^3.0",
+        "twig/twig": "^2.12|^3.0",
         "vich/uploader-bundle": "^2.2"
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.50"
+        "doctrine/doctrine-fixtures-bundle": "^3.5",
+        "symfony/maker-bundle": "^1.50",
+        "symfony/web-profiler-bundle": "6.3.*",
+        "zenstruck/foundry": "^1.36"
     },
     "config": {
         "allow-plugins": {
@@ -79,7 +93,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "6.1.*"
+            "require": "6.3.*"
         }
     }
 }

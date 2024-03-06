@@ -3,22 +3,17 @@
 namespace App\Service;
 
 use App\Entity\Group;
+use App\Entity\User;
 use App\Service\AbstractService;
 
 class GroupService extends AbstractService {
 
-    static function createGroup($name, $members) {
-        $group = new Group();
-        $group->setName($name);
-        $group->setMembers($members);
-        return $group;
-    }
-
-    public function parseDatas(Group $group) : Group
+    public function parseDatas(Group $group, ?User $user = null) : Group
     {
 
         /** @var User */
-        $user = $this->getUser();
+        if(!$user) $user = $this->getUser();
+
         if($group->getName() == null){
             if($group->getMembers()->count() > 2) {
                 $index = 0;
@@ -34,8 +29,9 @@ class GroupService extends AbstractService {
                     if($group->getPicture() === null) $group->setPicture($group->getMembers()[0]->getProfilePicture());
                 }
             }
+        } else {
+            if($group->getPicture() === null) $group->setPicture("https://ui-avatars.com/api/?name=" . str_replace(' ', '+', $group->getName()[0]) . "");
         }
-
         return $group;
     }
 

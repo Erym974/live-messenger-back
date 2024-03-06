@@ -1,0 +1,39 @@
+.jcc {
+    @extend .justify-content-center;
+}
+
+.jcb {
+    @extend .justify-content-between;
+}
+
+.jca {
+    @extend .justify-content-around;
+}
+
+.jcs {
+    @extend .justify-content-start;
+}
+
+.jce {
+    @extend .justify-content-end;
+}
+
+.aic {
+    @extend .align-items-center;
+}
+
+.ais {
+    @extend .align-items-start;
+}
+
+.aie {
+    @extend .align-items-end;
+}
+
+.df {
+    @extend .d-flex;
+}
+
+.fc {
+    @extend .flex-column;
+}

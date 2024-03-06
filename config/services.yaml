@@ -4,7 +4,17 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    upload_directory: '%kernel.project_dir%/public/uploads'
+    timezone: '%env(APP_TIMEZONE)%'
+    default_locale: 'fr'
+    front_end: '%env(FRONTEND_URL)%'
+    default_extension: '%env(URL_EXTENSION)%'
+    app.locales: [
+        fr:  Français,
+        en:  English,
+    ]
+    users_upload_directory: '%kernel.project_dir%/public/uploads/users'
+    messages_upload_directory: '%kernel.project_dir%/public/uploads/messages'
+    posts_upload_directory: '%kernel.project_dir%/public/uploads/posts'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -20,13 +30,20 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    # App\EventListener\ApiErrorListener:
+    #     tags:
+    #         - { name: kernel.event_listener, event: kernel.exception }
+
 
     App\EntityListener\:
         resource: '../src/EntityListener/'
         tags: ['doctrine.orm.entity_listener']
 
-    App\Security\JwtAccessVoter:
-        tags: ['security.voter']
+    # acme_api.event.jwt_created_listener:
+    App\EventListener\JWTCreatedListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -21,6 +21,7 @@ class Reaction
     private ?string $content = null;
 
     #[ORM\ManyToMany(targetEntity: User::class)]
+    #[Groups(['messages:read'])]
     private Collection $users;
 
     #[ORM\ManyToOne(inversedBy: 'reaction')]
@@ -30,7 +31,7 @@ class Reaction
     #[Groups(['messages:read'])]
     private int $count = 0;
 
-    #[Groups(['messages:read'])]
+    // #[Groups(['messages:read'])]
     private bool $reacted = false;
 
     public function __construct()

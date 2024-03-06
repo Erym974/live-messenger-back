@@ -1,0 +1,151 @@
+$font-size-base: 0.9rem !default;
+$h1-font-size: $font-size-base * 2 !default;
+$h2-font-size: $font-size-base * 1.8 !default;
+$h3-font-size: $font-size-base * 1.2 !default;
+$h4-font-size: $font-size-base * 0.87 !default;
+$h5-font-size: $font-size-base * 0.77 !default;
+$h6-font-size: $font-size-base !default;
+
+$input-btn-focus-width: 1px !default;
+$input-border-width: 0 !default;
+
+$display-font-weight: 800 !default;
+
+$navbar-light-active-color: $primary;
+$navbar-light-hover-color: rgba($primary, .7);
+$navbar-nav-link-padding-x: 1.4rem;
+
+$btn-padding-y-lg: .7rem;
+$btn-padding-x-lg: 1.5rem;
+
+
+.text-dark {
+    color: var(--color-dark) !important;
+}
+
+.text-white {
+    color: var(--color-white) !important;
+}
+
+.dropdown-menu {
+    background-color: var(--color-background);
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+    background-color: var(--color-light);
+}
+
+.modal-dialog {
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        color: var(--color-dark);
+        background-color: var(--color-background) !important;
+    }
+
+    button.close-btn {
+        color: var(--color-dark);
+
+        span {
+            font-size: 26px;
+        }
+    }
+}
+
+.text-underline {
+    text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-weight: 800;
+    color: var(--color-dark);
+}
+
+small {
+    font-size: 0.75rem;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.text-dark {
+    color: var(--color-dark) !important;
+}
+
+.card {
+    box-shadow: none;
+}
+
+.bg-white {
+    background: var(--bg-white) !important;
+}
+
+// Bootstrap overrides
+
+.card {
+    background: var(--color-white);
+    box-shadow: var(--box-shadow);
+    border: 0;
+}
+
+.btn-light {
+    background: var(--color-menu-pages);
+    color: var(--color-dark);
+}
+
+.btn-dark {
+    background: var(--color-dark);
+    color: var(--color-white);
+}
+
+.btn.btn-outline-dark {
+    border-color: var(--color-dark);
+    color: var(--color-dark);
+
+    span {
+        color: var(--color-dark);
+    }
+}
+
+.text-muted{
+    color: $text-muted !important;
+}
+
+
+.btn.btn-primary,
+.btn.btn-primary span,
+.btn.btn-success,
+.btn.btn-success span,
+.btn.btn-secondary,
+.btn.btn-secondary span {
+    color: white;
+}
+
+.btn-danger,
+.btn-warning {
+    color: white !important;
+
+    &:hover {
+        color: white !important;
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .btn-outline-#{$color} {
+        span {
+            color: $value;
+        }
+
+        &:hover {
+            span {
+                color: color-contrast($value);
+            }
+        }
+    }
+}

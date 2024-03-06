@@ -1,0 +1,36 @@
+{% extends 'dashboard.html.twig' %}
+
+
+{% block title %}{% trans %}Users{% endtrans %}{% endblock %}
+{% block page_main_title %}{% trans %}Users{% endtrans %}{% endblock %}
+
+{% block body %}
+
+	<section id="users">
+		{% include 'snippets/table.html.twig' ignore missing with {
+        "entity_name": "user",
+        'entities': users,
+        'actions': {
+            "detail": {
+                "icon": "visibility",
+                'route': {
+                    "name": 'admin.dashboard.user',
+                    'arguments' : {
+                        'entity': 'id'
+                    }
+                },
+            }
+        },
+        'params': {
+            'Email': 'email',
+            'Fullname': 'fullname',
+            'Rôle': 'role',
+            'Created At': {
+                'key': 'createdAt',
+                'type': 'date',
+            }
+            },
+        } %}
+	</section>
+
+{% endblock %}

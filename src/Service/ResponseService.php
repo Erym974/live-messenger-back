@@ -19,7 +19,7 @@ class ResponseService extends AbstractService {
         return new JsonResponse(
             [
                 "status" => false,
-                "message" => $message,
+                "message" => $this->translator->trans($message),
             ],
             $code,
             ['Content-Type' => "application/json"]
@@ -35,7 +35,7 @@ class ResponseService extends AbstractService {
      */
     public function ReturnSuccess(mixed $datas = [], array $groups = []) : JsonResponse
     {
-        return $this->json(
+        $response = $this->json(
             [
                 "status" => true,
                 "datas" => $datas,
@@ -44,6 +44,8 @@ class ResponseService extends AbstractService {
             ['Content-Type' => "application/json"],
             $groups,
         );
+
+        return $response;
     }
 
 }

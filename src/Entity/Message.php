@@ -19,7 +19,7 @@ class Message
     #[Groups(['messages:read', 'user:groups'])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(fetch: "LAZY")]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['messages:read'])]
     private ?User $sender = null;
@@ -38,6 +38,7 @@ class Message
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['messages:read'])]
     private ?Group $conversation = null;
 
     #[ORM\Column(nullable: true)]
@@ -48,10 +49,19 @@ class Message
     #[Groups(['messages:read'])]
     private Collection $reactions;
 
+    #[ORM\OneToMany(mappedBy: 'message', targetEntity: File::class)]
+    #[Groups(['messages:read', 'user:groups'])]
+    private Collection $files;
+
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'messages')]
+    #[Groups(['messages:read'])]
+    private ?self $reply = null;
+
     public function __construct()
     {
         $this->sended_at = new \DateTimeImmutable();
         $this->reactions = new ArrayCollection();
+        $this->files = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,6 +116,11 @@ class Message
         $this->status = $status;
 
         return $this;
+    }
+
+    public function getConversation(): ?Group
+    {
+        return $this->getGroup();
     }
 
     public function getGroup(): ?Group
@@ -167,6 +182,50 @@ class Message
                 $reaction->setMessage(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, File>
+     */
+    public function getFiles(): Collection
+    {
+        if($this->getStatus() === MessageStatus::DELETED) return new ArrayCollection();
+        return $this->files;
+    }
+
+    public function addFile(File $file): static
+    {
+        if (!$this->files->contains($file)) {
+            $this->files->add($file);
+            $file->setMessage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFile(File $file): static
+    {
+        if ($this->files->removeElement($file)) {
+            // set the owning side to null (unless already changed)
+            if ($file->getMessage() === $this) {
+                $file->setMessage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getReply(): ?self
+    {
+        if($this->reply && $this->reply->getReply()) $this->reply->setReply(null);
+        return $this->reply;
+    }
+
+    public function setReply(?self $reply): static
+    {
+        $this->reply = $reply;
 
         return $this;
     }

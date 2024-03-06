@@ -1,35 +1,68 @@
-{% extends 'base.html.twig' %}
+{% extends 'auth.html.twig' %}
 
 
-{% block title %}Messenger | Back{% endblock %}
+{% block title %}Messenger | Back
+{% endblock %}
 
 {% block body %}
-    <main id="login">
-        <form method="post" class="login-form box p-4">
-            <h1 class="h3 mb-3 font-weight-normal text-dark">Se connecter</h1>
-            <hr>
-            <div class="form-group mt-3">
-                <label for="inputEmail">Email</label>
-                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-            </div>
-            <div class="form-group mt-3">
-                <label for="inputPassword">Mot de passe</label>
-                <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-            </div>
+	<main id="login" class="df aic jcc">
+		{# <form method="post" class="login-form box p-4">
+							<h1 class="h3 mb-3 font-weight-normal text-dark">Se connecter</h1>
+							<hr>
+							<div class="form-group mt-3">
+								<label for="inputEmail">Email</label>
+								<input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+							</div>
+							<div class="form-group mt-3">
+								<label for="inputPassword">Mot de passe</label>
+								<input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+							</div>
+				
+							{% if error %}
+								<div class="alert alert-danger mt-3">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+							{% endif %}
+				
+							<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+				
+							<div class="button-container">
+								<button class="btn btn-lg btn-primary mt-4" type="submit">
+									Se connecter
+								</button>
+							</div>
+						</form> #}
 
-            {% if error %}
-                <div class="alert alert-danger mt-3">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-            {% endif %}
+		<div class="login-form col-md-6 col-11 mb-5">
+			<div class="card shadow p-md-5 py-4 px-2">
+				<form method="post">
+					<h2 class="text-center text-dark">{% trans %}Sign-in{% endtrans %}</h2>
+					<hr class="mb-4 bold">
+					{% if error %}
+						<div class="text-danger df aic my-4">
+							<span class="material-icons-sharp me-2">error_outline</span>
+							{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+					{% endif %}
+					<div class="form-group mb-3">
+						<input type="email" value="{{ last_username }}" name="email" class="form-control" placeholder="{% trans %}Email{% endtrans %}" autocomplete="email" required autofocus>
+					</div>
 
-            <input type="hidden" name="_csrf_token"
-                value="{{ csrf_token('authenticate') }}"
-            >
+					<div class="form-group">
+						<div class="input-group">
+							<input type="password" name="password" class="form-control" placeholder="{% trans %}Password{% endtrans %}" autocomplete="current-password" required>
+						</div>
+					</div>
 
-            <div class="button-container">
-                <button class="btn btn-lg btn-primary mt-4" type="submit">
-                    Se connecter
-                </button>
-            </div>
-        </form>
-    </main>
+					<div class="links text-end my-3">
+						<label class="form-check-label d-flex aic jcc"></label>
+						<a href="{{ "#" }}" class="mt-3">{% trans %}Forgot your password{% endtrans %}?</a>
+					</div>
+
+					<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+					<div class="form-group mb-0 mt-4 d-grid gap-2">
+						<button class="btn btn-block btn-primary btn-lg form" type="submit">{% trans %}Sign-in{% endtrans %}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
 {% endblock %}

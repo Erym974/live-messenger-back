@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
-#[isGranted('JWT_HEADER_ACCESS')]
+
 class SettingsController extends AbstractController
 {
 
@@ -24,7 +24,7 @@ class SettingsController extends AbstractController
         
     }
 
-    #[Route('api/settings', name: 'api.settings', methods: ['POST'])]
+    #[Route('settings', name: 'api.settings', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     
     public function settings(Request $request, SettingService $settingsService): JsonResponse
     {

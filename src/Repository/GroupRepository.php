@@ -45,4 +45,19 @@ class GroupRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+   public function findPrivateGroup($user, $user2): ?Group
+   {
+        return $this->createQueryBuilder('g')
+            ->innerJoin('g.members', 'm1')
+            ->innerJoin('g.members', 'm2')
+            ->andWhere('g.private = :private')
+            ->andWhere('m1 = :user')
+            ->andWhere('m2 = :user2')
+            ->setParameter('private', true)
+            ->setParameter('user', $user)
+            ->setParameter('user2', $user2)
+           ->getQuery()
+            ->getOneOrNullResult()
+       ;
+   }
 }

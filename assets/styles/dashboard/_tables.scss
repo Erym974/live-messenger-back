@@ -1,0 +1,89 @@
+.table {
+    color: var(--color-dark);
+    width: 100%;
+
+    td,
+    th {
+        background-color: var(--color-background)
+    }
+}
+
+.dataTables_wrapper{
+    @extend .card;
+    border-radius: 10px;
+    height: 50%;
+    padding: 1rem;
+    width: 100%;
+
+    option{
+        color: var(--color-dark) !important;
+        background-color: var(--color-white);
+    }
+
+    span,
+    .dataTables_info,
+    table,
+    .odd,
+    td,
+    th,
+    input,
+    select,
+    .even,
+    label{
+        color: var(--color-dark) !important;
+    }
+    .dataTables_paginate{
+        a.paginate_button  {
+            color: var(--color-dark) !important;
+
+            &:hover{
+                color: var(--color-dark) !important;
+                border: 1px solid rgba(0, 0, 0, 0.3);
+                background-color: rgba(230, 230, 230, 0.1);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(230, 230, 230, 0.1)), color-stop(100%, rgba(0, 0, 0, 0.1)));
+                background: -webkit-linear-gradient(top, rgba(230, 230, 230, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+                background: -moz-linear-gradient(top, rgba(230, 230, 230, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+                background: -ms-linear-gradient(top, rgba(230, 230, 230, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+                background: -o-linear-gradient(top, rgba(230, 230, 230, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+                background: linear-gradient(to bottom, rgba(230, 230, 230, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+                border: none;
+            }
+        }
+        a.paginate_button.current{
+            color: var(--color-dark-variant) !important;
+            border: none;
+            &:hover{
+                border: none;
+            }
+        }
+    }
+}
+
+.table-dropdown{
+    button{
+        background: transparent;
+        display: flex;
+        border: none;
+        vertical-align: middle;
+        &:after{
+            display: none;
+        }
+    }
+    ul.dropdown-menu{
+        background-color: var(--color-background);
+        li{
+            button{
+                color: var(--color-dark) !important;
+            }
+            button.text-danger{
+                color: $danger !important;
+            }
+        }
+    }
+}
+
+.table-bordered {
+    th {
+        border: 1px solid var(--bs-table-border-color);
+    }
+}

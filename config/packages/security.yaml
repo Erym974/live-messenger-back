@@ -9,14 +9,31 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_MODERATOR
+        ROLE_MODERATOR: ROLE_USER
     firewalls:
+        login:
+            host: ^api\.swiftchat\.(fr|local)$
+            pattern: ^/auth/login
+            stateless: true
+            json_login:
+                check_path: api_auth_login
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        api:
+            host: ^api\.swiftchat\.(fr|local)$
+            pattern: ^/(?!blog/posts$|jobs$|auth$|legal-notices/.*$|$).*$
+            stateless: true
+            jwt: ~
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
             provider: app_user_provider
-            entry_point: App\Security\AuthenticationEntryPoint
             custom_authenticator: App\Security\AppAuthenticator
             logout:
                 path: auth.logout
@@ -38,9 +55,14 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/auth, roles: PUBLIC_ACCESS }
-        - { path: ^/api/*, roles: JWT_HEADER_ACCESS }
-        - { path: ^/documentations, roles: ROLE_ADMIN }
+        - { path: ^/auth, roles: PUBLIC_ACCESS, host: api\.swiftchat }
+        - { path: ^/jobs, roles: PUBLIC_ACCESS, host: api\.swiftchat }
+        - { path: ^/blog/posts, roles: PUBLIC_ACCESS, host: api\.swiftchat }
+        - { path: ^/legal-notices, roles: PUBLIC_ACCESS, host: api\.swiftchat }
+        - { path: ^/$, roles: PUBLIC_ACCESS, host: api\.swiftchat }
+        - { path: ^/, roles: ROLE_USER, host: api\.swiftchat }
+        - { path: ^/auth, roles: PUBLIC_ACCESS, host: dashboard\.swiftchat }
+        - { path: ^/*, roles: ROLE_MODERATOR, host: dashboard\.swiftchat }
 
 when@test:
     security:

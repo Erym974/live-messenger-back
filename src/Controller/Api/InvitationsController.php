@@ -7,7 +7,6 @@ use App\Entity\Invitation;
 use App\Entity\User;
 use App\Service\InvitationService;
 use App\Service\InvitationsStatus;
-use App\Annotations\DocumentationAnnotation;
 use App\Service\ResponseService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -15,17 +14,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
-#[IsGranted('JWT_HEADER_ACCESS')]
+
 class InvitationsController extends AbstractController
 {
 
-    public function __construct(private EntityManagerInterface $em, private ResponseService $responseService)
+    public function __construct(private EntityManagerInterface $em, private ResponseService $responseService, private SerializerInterface $serializer)
     {
         
     }
 
-    #[Route('/api/invitations', name: 'api.invitations', methods: ['GET', 'POST', 'DELETE', 'PATCH'])]
+    #[Route('/invitations', name: 'api.invitations', methods: ['GET', 'POST', 'DELETE', 'PATCH'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function invitations(?Invitation $invitation, Request $request, InvitationService $invitationService): JsonResponse
     {
 
@@ -38,12 +38,14 @@ class InvitationsController extends AbstractController
             if(!isset($parameters['code'])) return $this->responseService->ReturnError(404, "Code not found");
         
             $code = $parameters['code'];
-
+            /** @var User */
             $friend = $this->em->getRepository(User::class)->findOneBy(['friendCode' => $code]);
 
             if($friend == null) return $this->responseService->ReturnError(404, "User not found");
 
             if($friend === $user) return $this->responseService->ReturnError(400, "Yourself");
+
+            if($friend->getSetting('allow-friend-request') != "true") return $this->responseService->ReturnError(400, "User doesn't allow friend request");
 
             /** @var Invitation */
             $invitation = $this->em->getRepository(Invitation::class)->findInvitation($user, $friend);
@@ -110,27 +112,29 @@ class InvitationsController extends AbstractController
 
             if(($invitation->getEmitter() != $user && $invitation->getReceiver() != $user) && !$user->hasRole('ROLE_ADMIN')) return $this->responseService->ReturnError(400, "You're not the emitter or the receiver");
             
-            $friend = $invitation->getEmitter();   
+            $friend = $invitation->getEmitter();  
+            $inviteId =  $invitation->getId();
 
             if($invitationService->acceptInvitation($invitation)) {
 
                 $friendEntity = $user->getFriend($friend);
 
                 if($friendEntity != null) {
-                    $friendEntity = [
+                    $friendData = [
                         "id" => $friendEntity->getId(),
+                        "friend" => $friend,
+                        "since" => $friendEntity->getSince()
+                    ];
+
+                    $userData = [
+                        "id" => $friendEntity->getId(),
+                        "invitation" => $inviteId,
+                        "friend" => $user,
                         "since" => $friendEntity->getSince()
                     ];
                 }
 
-                return $this->responseService->ReturnSuccess([
-                    "user" => $friend,
-                    "relationship" => $friendEntity,
-                    "invitation" => null,
-                ], ['groups' => 'user:friend']);
-
-                $friend = $user->getFriend($friend);
-                return $this->responseService->ReturnSuccess($friend, ['groups' => 'user:friend']);
+                return $this->responseService->ReturnSuccess($friendData, ['groups' => 'user:friend']);
             } else {
                 return $this->responseService->ReturnError(500, "Can't accept invitation");
             }

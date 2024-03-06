@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale }}">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="icon" href="/favicon.ico">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>
+			{% block title %}
+				Mon titre
+			{% endblock %}
+			| SwiftChat
+		</title>
+
+		<link rel="icon" type="image/png" href="{{ asset('build/images/favicon/favicon-dashboard.png') }}" sizes="32x32">
+
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('app') }}
+		{% endblock %}
+	</head>
+	<body class="{% block body_class %}{% endblock %}">
+
+		<div class="main-container" user-id="{% block user_id %}{% endblock %}">
+
+			{% include 'snippets/aside.html.twig' ignore missing with {'active': active ?? 'home'} %}
+
+			<main>
+				<div class="top-bar">
+					<div class="top df jcb aic" {{ stimulus_controller('aside') }}>
+						<div>
+							<a id="menu-btn" class="hamburger-button inactive d-md-none border-0 ms-4" href="javascript:void(0);" {{ stimulus_action('aside', 'toggleAside') }}>
+								<span class="line"></span>
+								<span class="line"></span>
+								<span class="line"></span>
+							</a>
+						</div>
+
+						<div class="me-auto df aic">
+							<a id="toggle-nav-btn" class="hamburger-button d-none d-md-block ms-4" href="javascript:void(0);" {{ stimulus_action('aside', 'toggleAside')|stimulus_action('aside', 'compactExpand') }}>
+								<span class="line"></span>
+								<span class="line"></span>
+								<span class="line"></span>
+							</a>
+							<h2 class="mb-0 page_main_title" data-qr-website-name> {% block page_main_title %}{% endblock %}
+								</h2>
+							</div>
+
+							<ul class="navbar-nav ms-auto mb-2 mb-lg-0 me-4">
+								{% include "snippets/language_selector.twig" %}
+							</ul>
+							<div>
+								<div class="df aic">
+									<div {{ stimulus_controller('theme') }} class="theme-toggler me-4 d-none d-md-flex">
+										<span class="material-icons-sharp active text-white">
+											light_mode
+										</span>
+										<span class="material-icons-sharp">
+											dark_mode
+										</span>
+									</div>
+
+									{% include "snippets/user_menu.html.twig" %}
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="content d-flex jcb"> {% block body %}{% endblock %}
+						</div>
+					</main>
+
+				</div>
+
+				<!-- Flash -->
+				<div class="flash-container">
+					{% for type, message in app.flashes %}
+						<div class="flash play">
+							<div class="alert alert-{{ type }}">
+								{{ message[0]|trans }}
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+				<!-- /Flash-->
+
+				{% block javascripts %}
+					{{ encore_entry_script_tags('app') }}
+				{% endblock %}
+			</body>
+
+		</html>
