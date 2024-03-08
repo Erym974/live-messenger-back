@@ -24,7 +24,7 @@ class Group
     private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'groups', fetch: "LAZY")]
-    #[Groups(['group:read'])]
+    #[Groups(['group:read', 'user:groups'])]
     private Collection $members;
 
     #[ORM\OneToMany(mappedBy: 'conversation', fetch: "LAZY", targetEntity: Message::class, orphanRemoval: true)]
@@ -34,9 +34,14 @@ class Group
     #[Groups(['user:groups', 'group:read'])]
     private ?Message $lastMessage = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    // #[ORM\Column(length: 255, nullable: true)]
+    // #[Groups(['user:groups', 'group:read'])]
+    // private ?string $picture = null;
+
+    #[ORM\ManyToOne(cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['user:groups', 'group:read'])]
-    private ?string $picture = null;
+    private ?File $picture = null;
 
     #[ORM\Column(length: 15, nullable: true)]
     #[Groups(['user:groups', 'group:read'])]
@@ -57,6 +62,8 @@ class Group
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['user:groups', 'group:read'])]
     private ?bool $private = false;
+
+    private ?string $tempPath = null;
 
 
 
@@ -147,12 +154,32 @@ class Group
         return $this;
     }
 
-    public function getPicture(): ?string
+    // public function getPicture(): ?string
+    // {
+    //     return $this->picture;
+    // }
+
+    // public function setPicture(?string $picture): static
+    // {
+    //     $this->picture = $picture;
+    //     return $this;
+    // }
+
+    public function getPicture(bool $entity = false): File|null|string
     {
-        return $this->picture;
+        if($entity) return $this->picture;
+        if($this->tempPath) return $this->tempPath;
+        if($this->picture == null) return null;
+        return $this->picture->getPath();
     }
 
-    public function setPicture(?string $picture): static
+    public function setTempPicture(string $tempPath) : static
+    {
+        $this->tempPath = $tempPath;
+        return $this;
+    }
+
+    public function setPicture(?File $picture): static
     {
         $this->picture = $picture;
         return $this;

@@ -14,7 +14,7 @@ class BlogController extends AbstractController
     #[Route('blog/posts', name: 'api..blog.posts', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function posts(PostRepository $postRepository, ResponseService $responseService): JsonResponse
     {
-        $posts = $postRepository->findAll();
+        $posts = $postRepository->findAllPosts();
         return $responseService->ReturnSuccess($posts, ['groups' => 'posts:read']);
     }
 

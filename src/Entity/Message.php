@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
+#[ORM\EntityListeners(['App\EntityListener\MessageListener'])]
 class Message
 {
     #[ORM\Id]
@@ -28,9 +29,12 @@ class Message
     #[Groups(['messages:read'])]
     private ?\DateTimeImmutable $sended_at = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    // #[ORM\Column(type: Types::TEXT)]
     #[Groups(['messages:read', 'user:groups'])]
     private ?string $content = null;
+    
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $encrypted_content = null;
 
     #[ORM\Column(length: 10)]
     #[Groups(['messages:read'])]
@@ -103,6 +107,17 @@ class Message
     {
         $this->content = $content;
 
+        return $this;
+    }
+
+    public function getEncryptedContent(): ?string
+    {
+        return $this->encrypted_content;
+    }
+
+    public function setEncryptedContent(string $encrypted_content): static
+    {
+        $this->encrypted_content = $encrypted_content;
         return $this;
     }
 

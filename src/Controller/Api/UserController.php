@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Service\JWT;
 use App\Service\ResponseService;
 use App\Service\SettingService;
+use App\Service\UploadFileService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,7 +27,7 @@ class UserController extends AbstractController
     }
 
     #[Route('users/me', name: 'api.users.me.post', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
-    public function users_me_post(Request $request): JsonResponse
+    public function users_me_post(Request $request, UploadFileService $uploadFileService): JsonResponse
     {
 
         /** @var User */
@@ -44,21 +45,19 @@ class UserController extends AbstractController
             return $this->responseService->ReturnError(400, "Invalid parameters");
         }
 
-        if ($file->getMimeType() != "image/jpeg" && $file->getMimeType() != "image/png") {
-            return $this->responseService->ReturnError(400, "Invalid file type");
-        }
+        $uploadFileResponse = $uploadFileService->uploadFile($file, "users_upload_directory");
 
-        if ($file->getSize() > 1000000) {
-            return $this->responseService->ReturnError(400, "File is too big");
-        }
-
-        $filename = md5(uniqid()) . "." . $file->guessExtension();
-        $file->move($this->getParameter('users_upload_directory'), $filename);
-
-        if ($params['picture'] == "profile") {
-            $user->setProfilePicture($this->getParameter("ressources_url") . "\/users\/" . $filename);
-        } else {
-            $user->setCoverPicture($this->getParameter("ressources_url") . "\/users\/" . $filename);
+        switch($params['picture']) {
+            case "profile":
+                $old = $user->getProfilePicture(true);
+                $this->em->remove($old);
+                $user->setProfilePicture($uploadFileResponse->getFile());
+                break;
+            case "cover":
+                $old = $user->getCoverPicture(true);
+                $this->em->remove($old);
+                $user->setCoverPicture($uploadFileResponse->getFile());
+                break;
         }
 
         $this->em->persist($user);
@@ -78,18 +77,17 @@ class UserController extends AbstractController
         /** @var User */
         $user = $this->getUser();
 
-
         $params = json_decode($request->getContent(), true);
 
         if ($params == null) $this->responseService->ReturnError(400, "Missing parameters");
 
         $firstname = $params['firstname'] ?? null;
         $lastname = $params['lastname'] ?? null;
-        $biography = $params['biography'] ?? null;
         $email = $params['email'] ?? null;
 
-        if (strlen($biography) > 50) $this->responseService->ReturnError(400, "Biography is too long");
+        if(isset($params['biography'])) $biography = $params['biography'];
 
+        if (strlen($biography) > 50) $this->responseService->ReturnError(400, "Biography is too long");
 
         if ($email != null) {
             $user_email = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
@@ -99,7 +97,7 @@ class UserController extends AbstractController
 
         if ($firstname != null) $user->setFirstname($firstname);
         if ($lastname != null) $user->setLastname($lastname);
-        if ($biography != null) $user->setBiography($biography);
+        if (isset($params['biography'])) $user->setBiography($biography);
         if ($email != null) $user->setEmail($email);
 
         $this->em->persist($user);

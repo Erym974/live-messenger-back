@@ -4,6 +4,7 @@ namespace App\Factory;
 
 use App\Entity\File;
 use App\Repository\FileRepository;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\RepositoryProxy;
@@ -34,7 +35,7 @@ final class FileFactory extends ModelFactory
      *
      * @todo inject services if required
      */
-    public function __construct()
+    public function __construct(private ParameterBagInterface $parameters)
     {
         parent::__construct();
     }
@@ -60,8 +61,13 @@ final class FileFactory extends ModelFactory
     protected function initialize(): self
     {
         return $this
-            // ->afterInstantiate(function(File $file): void {})
+            ->afterInstantiate(function(File $file): void { $this->initFiles($file); })
         ;
+    }
+
+    private function initFiles(File $file): void
+    {
+        copy($this->parameters->get('file_factory_path') . $file->getName(), $this->parameters->get('upload_directory') . $file->getParent() . "/" . $file->getName());
     }
 
     protected static function getClass(): string

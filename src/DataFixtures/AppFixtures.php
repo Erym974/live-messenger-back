@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\LegalNotice;
 use App\Factory\CategoryFactory;
+use App\Factory\FileFactory;
 use App\Factory\FriendFactory;
 use App\Factory\GroupFactory;
 use App\Factory\InvitationFactory;
@@ -75,7 +76,14 @@ class AppFixtures extends Fixture
         JobFactory::createMany(10);
 
         /** Post */
-        PostFactory::createMany(10);
+        PostFactory::createMany(10, [
+            'image' => FileFactory::createOne([
+                'name' => 'fakeimg.png',
+                'type' => 'image/png',
+                'path' => 'http://ressources.swiftchat.local:8000/uploads/posts/fakeimg.png',
+                'parent' => 'posts'
+            ])
+        ]);
         
     }
 
@@ -126,6 +134,12 @@ class AppFixtures extends Fixture
 
         MetaFactory::createOne([
             'name' => 'allow-friend-request',
+            'value' => 'true',
+            'allowed' => 'bool'
+        ]);
+
+        MetaFactory::createOne([
+            'name' => 'allow-easter',
             'value' => 'true',
             'allowed' => 'bool'
         ]);

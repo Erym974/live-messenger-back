@@ -18,7 +18,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read', 'user:public', 'user:friend', 'user:groups', 'group:read', 'messages:read', 'invitation:read'])]
+    #[Groups(['user:read', 'user:public', 'user:friend',  'group:read', 'messages:read', 'invitation:read', 'user:groups'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -43,23 +43,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $isVerified = false;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['user:read', 'user:public', 'user:friend', 'user:groups', 'group:read', 'messages:read'])]
+    #[Groups(['user:read', 'user:public', 'user:friend',  'group:read', 'messages:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['user:read', 'user:public', 'user:friend', 'user:groups', 'group:read', 'messages:read'])]
+    #[Groups(['user:read', 'user:public', 'user:friend',  'group:read', 'messages:read'])]
     private ?string $lastname = null;
 
-    #[Groups(['user:read', 'user:public', 'user:friend', 'user:groups', 'group:read', 'messages:read', 'invitation:read'])]
+    #[Groups(['user:read', 'user:public', 'user:friend',  'group:read', 'messages:read', 'invitation:read'])]
     private ?string $fullname;
 
-    #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['user:read', 'user:public', 'user:friend', 'user:groups', 'group:read', 'messages:read', 'invitation:read'])]
-    private ?string $profilePicture;
+    #[ORM\ManyToOne(cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user:read', 'user:public', 'user:friend',  'group:read', 'messages:read', 'invitation:read'])]
+    private ?File $profilePicture = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\ManyToOne(cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
     #[Groups(['user:read', 'user:public', 'user:friend'])]
-    private ?string $coverPicture;
+    private ?File $coverPicture = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['user:read', 'user:public', 'user:friend'])]
@@ -76,7 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'members', fetch: "LAZY")]
     private Collection $groups;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Setting::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Setting::class, orphanRemoval: true, cascade: ["persist"])]
     #[Groups(['user:read'])]
     private Collection $settings;
 
@@ -257,23 +259,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getProfilePicture(): ?string
+    public function getProfilePicture(bool $entity = false): File|null|string
     {
-        return $this->profilePicture;
+        if($entity) return $this->profilePicture;
+        if($this->profilePicture == null) return null;
+        return $this->profilePicture->getPath();
     }
 
-    public function setProfilePicture(string $profilePicture): static
+    public function setProfilePicture(?File $profilePicture): static
     {
         $this->profilePicture = $profilePicture;
         return $this;
     }
 
-    public function getCoverPicture(): ?string
+    public function getCoverPicture(bool $entity = false): File|null|string
     {
-        return $this->coverPicture;
+        if($entity) return $this->coverPicture;
+        if($this->coverPicture == null) return null;
+        return $this->coverPicture->getPath();
     }
 
-    public function setCoverPicture(string $coverPicture): static
+
+    public function setCoverPicture(?File $coverPicture): static
     {
         $this->coverPicture = $coverPicture;
         return $this;

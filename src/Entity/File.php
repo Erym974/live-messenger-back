@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
+#[ORM\EntityListeners(['App\EntityListener\FileListener'])]
 class File
 {
     #[ORM\Id]
