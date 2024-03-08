@@ -17,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     description: 'Init default privacy',
     aliases: ['s:i:p']
 )]
-class SwiftchatInitTermsCommand extends Command
+class SwiftchatInitPrivacyCommand extends Command
 {
     public function __construct(private EntityManagerInterface $entityManager)
     {
