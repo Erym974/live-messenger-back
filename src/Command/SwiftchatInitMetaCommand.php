@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'swiftchat:init:meta',
+    name: 'swiftchat:init-meta',
     description: 'Add a short description for your command',
     aliases: ['s:i:m']
 )]

@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'swiftchat:init:privacy',
+    name: 'swiftchat:init-privacy',
     description: 'Init default privacy',
     aliases: ['s:i:p']
 )]
