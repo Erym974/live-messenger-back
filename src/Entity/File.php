@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
+#[ORM\EntityListeners(['App\EntityListener\FileListener'])]
 class File
 {
     #[ORM\Id]
@@ -53,7 +54,7 @@ class File
 
     public function getPath(): ?string
     {
-        return $this->parent . "" . $this->path;
+        return $this->path;
     }
 
     public function setPath(string $path): static

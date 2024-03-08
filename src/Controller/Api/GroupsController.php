@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\DTO\GroupDTO;
+use App\Entity\File;
 use App\Entity\Group;
 use App\Entity\User;
 use App\Service\GroupService;
@@ -126,8 +127,8 @@ class GroupsController extends AbstractController
 
         if (count($group->getMembers()) < 3) return $this->responseService->ReturnError(400, "You need at least 2 members to create a group");
 
-        // $this->em->persist($group);
-        // $this->em->flush();
+        $this->em->persist($group);
+        $this->em->flush();
 
         return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
     }
@@ -145,7 +146,7 @@ class GroupsController extends AbstractController
             return $a->getLastActivity() < $b->getLastActivity();
         });
 
-        foreach($groups as $group) {
+        foreach ($groups as $group) {
             $group = $this->groupService->parseDatas($group);
         }
 
@@ -166,4 +167,47 @@ class GroupsController extends AbstractController
         return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
     }
 
+    /** Récupération d'un groupe */
+    #[Route('groups/{group}', name: 'api.group.patch', methods: ['PATCH'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
+    public function group_patch(Group $group, Request $request): JsonResponse
+    {
+        /** @var User */
+        $user = $this->getUser();
+
+        if (!$group->hasMember($user)) return $this->responseService->ReturnError(403, "You are not a member of this group");
+        if($group->getAdministrator() != $user) return $this->responseService->ReturnError(403, "You are not the administrator of this group");
+
+        $params = json_decode($request->getContent(), true);
+
+        if(isset($params['name']) && $params['name'] != $group->getName()) $group->setName($params['name']);
+        if(isset($params['emoji']) && $params['emoji'] != $group->getEmoji()) $group->setEmoji($params['emoji']);
+        
+        if(isset($params['picture'])) {
+            $fileData = $params['picture'];
+            $base64WithoutHeader = explode('base64', $fileData)[1];
+            $decodedFileData = base64_decode($base64WithoutHeader);
+            $extension = explode('/', mime_content_type($fileData))[1];
+            $type = mime_content_type($fileData);
+            $filename = md5(uniqid()) . ".$extension";
+            file_put_contents($this->getParameter('kernel.project_dir') . '/public/uploads/groups/' . $filename, $decodedFileData);
+
+            $file = (new File())
+                ->setParent("groups")
+                ->setName($filename)
+                ->setType($type)
+                ->setPath($this->getParameter("ressources_url") . "/groups/" . $filename);
+
+            $old = $group->getPicture(true);
+            if($old) $this->em->remove($old);
+
+            $group->setPicture($file);
+
+        }
+
+        $this->em->persist($group);
+        $this->em->flush();
+
+        $this->groupService->parseDatas($group);
+        return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
+    }
 }

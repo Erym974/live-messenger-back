@@ -5,13 +5,11 @@ namespace App\Controller\Api;
 use App\Entity\File;
 use App\Entity\Group;
 use App\Entity\Message;
-use App\Entity\Reaction;
 use App\Entity\User;
 use App\Service\GroupService;
 use App\Service\MessageService;
 use App\Service\MessageStatus;
 use App\Service\ResponseService;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,20 +17,21 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
 
 class MessagesController extends AbstractController
 {
 
-    public function __construct(private LoggerInterface $logger, private GroupService $groupService, private SerializerInterface $serializer, private EntityManagerInterface $em, private UserPasswordHasherInterface $hasher, private ResponseService $responseService)
+    public function __construct(private GroupService $groupService, private SerializerInterface $serializer, private EntityManagerInterface $em, private UserPasswordHasherInterface $hasher, private ResponseService $responseService)
     {
     }
 
     #[Route('messages/{group}', name: 'api.messages.post', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
-    public function messages_post(Group $group, Request $request): JsonResponse
+    public function messages_post(Group $group, Request $request, LoggerInterface $logger): JsonResponse
     {
+
+        
 
         /** @var User */
         $user = $this->getUser();
@@ -41,19 +40,22 @@ class MessagesController extends AbstractController
         $parameters = json_decode($request->getContent(), true);
         if (!$parameters) $parameters = $request->request->all();
 
-        if (strlen($parameters['message']) > 300) return $this->responseService->ReturnError(400, "Message is too long");
+        $content = $parameters['message'] ?? "";
+        $files = $parameters['files'] ?? [];
+        if(!$content && count($files) == 0) return $this->responseService->ReturnError(400, "Missing parameters");
 
-        // Initialize message
+        if (strlen($content) > 300) return $this->responseService->ReturnError(400, "Message is too long");
+
         $message = (new Message())
             ->setSender($user)
             ->setStatus(MessageStatus::SENDED)
             ->setEdited(false)
             ->setGroup($group);
 
-        if ($parameters['message'] === ":emoji:") $message->setContent($group->getEmoji());
-        else $message->setContent($parameters['message']);
+        if ($content === ":emoji:") $message->setContent($group->getEmoji());
+        else $message->setContent($content);
 
-        if (isset($parameters['reply'])) {
+        if (isset($parameters['reply']) && count($files) === 0) {
             $reply = $this->em->getRepository(Message::class)->find($parameters['reply']);
             if ($reply) $message->setReply($reply);
         }
@@ -64,52 +66,29 @@ class MessagesController extends AbstractController
         $this->em->persist($message);
         $this->em->flush();
 
-        $files = $request->files->get('files');
-
-        if ($files) {
-
-            $filesMessage = null;
-            $dedicatedMessage = false;
-
-            if ($parameters['message']) {
-                $filesMessage = new Message();
-                $filesMessage->setStatus(MessageStatus::SENDED);
-                $filesMessage->setSender($user);
-                $filesMessage->setContent("");
-                $filesMessage->setEdited(false);
-                $filesMessage->setGroup($group);
-                $dedicatedMessage = true;
-
-                $this->em->persist($filesMessage);
-                $this->em->flush();
-                $group->setLastMessage($filesMessage);
-            } else {
-                $filesMessage = $message;
-            }
-
+        if (count($files) > 0) {
             foreach ($files as $fileData) {
 
-                $filename = md5(uniqid()) . "." . $fileData->guessExtension();
-                $type = $fileData->getClientmimeType();
-                $fileData->move($this->getParameter('messages_upload_directory'), $filename);
-                $file = new File();
-                $file->setName($filename);
-                $file->setType($type);
-                $file->setPath($this->getParameter("ressources_url") . "\/messages\/" . $filename);
-                $filesMessage->addFile($file);
-                $this->em->persist($filesMessage);
+                // Convert base 64 to file
+                $base64WithoutHeader = explode('base64', $fileData)[1];
+                $decodedFileData = base64_decode($base64WithoutHeader);
+                $extension = explode('/', mime_content_type($fileData))[1];
+                $type = mime_content_type($fileData);
+                $filename = md5(uniqid()) . ".$extension";
+                file_put_contents($this->getParameter('kernel.project_dir') . '/public/uploads/messages/' . $filename, $decodedFileData);
+
+                // Create File entity
+                $file = (new File())
+                    ->setParent("messages")
+                    ->setName($filename)
+                    ->setType($type)
+                    ->setPath($this->getParameter("ressources_url") . "/messages/" . $filename);
+                $message->addFile($file);
+
+                // Save entities
+                $this->em->persist($message);
                 $this->em->persist($file);
                 $this->em->flush();
-            }
-        }
-
-        $responseMessages = [$message];
-
-        if (isset($dedicatedMessage) && $dedicatedMessage) $responseMessages[] = $filesMessage;
-
-        foreach ($group->getMembers() as $member) {
-            if ($member->getId() != $user->getId()) {
-                $group = $this->groupService->parseDatas($group, $member);
             }
         }
 
@@ -198,9 +177,6 @@ class MessagesController extends AbstractController
             $react->setReacted($react->getUsers()->contains($user));
             $react->setCount(count($react->getUsers()));
         }
-
-        /** @var Group */
-        $group = $message->getGroup();
 
         return $this->responseService->ReturnSuccess($message, ['groups' => 'messages:read']);
     }

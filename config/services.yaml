@@ -9,15 +9,27 @@ parameters:
     front_end: '%env(FRONTEND_URL)%'
     default_extension: '%env(URL_EXTENSION)%'
     ressources_url: '%env(RESSOURCES_URL)%'
-    default_profile_picture: '%env(RESSOURCES_URL)%/users/default_profile_picture.png'
-    default_cover_picture: '%env(RESSOURCES_URL)%/users/default_cover_picture.png'
+    encrypt_secret: '%env(ENCRYPT_KEY)%'
+    encrypt_algo: '%env(ENCRYPT_ALGO)%'
     app.locales: [
         fr:  Français,
         en:  English,
     ]
+    upload_directory: '%kernel.project_dir%/public/uploads/'
     users_upload_directory: '%kernel.project_dir%/public/uploads/users'
     messages_upload_directory: '%kernel.project_dir%/public/uploads/messages'
     posts_upload_directory: '%kernel.project_dir%/public/uploads/posts'
+    file_factory_path: '%kernel.project_dir%/config/uploads/'
+    default_profile_pictures: 
+        - '3700_1_03.jpg'
+        - '3800_2_06.jpg'
+        - '6200_2_08.jpg'
+        - '5400_2_04.png'
+        - '3600_2_08.jpg'
+    default_cover_pictures: 
+        - '93654.jpg'
+        - '93611.jpg'
+        - '93487.jpg'
 services:
     # default configuration for services in *this* file
     _defaults:
