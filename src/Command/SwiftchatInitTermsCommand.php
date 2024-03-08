@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'swiftchat:init:terms',
+    name: 'swiftchat:init-terms',
     description: 'Init default terms',
     aliases: ['s:i:t']
 )]

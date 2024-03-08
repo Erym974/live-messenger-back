@@ -15,7 +15,7 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'swiftchat:create:meta',
+    name: 'swiftchat:create-meta',
     description: 'Create a new Meta settings',
     aliases: ['s:c:m']
 )]

@@ -14,7 +14,7 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'swiftchat:create:admin',
+    name: 'swiftchat:create-admin',
     description: 'Create an Admin Account',
     aliases: ['s:c:a']
 )]
