@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Group;
 use App\Entity\LegalNotice;
 use App\Factory\CategoryFactory;
 use App\Factory\FileFactory;
@@ -10,11 +11,13 @@ use App\Factory\GroupFactory;
 use App\Factory\InvitationFactory;
 use App\Factory\JobFactory;
 use App\Factory\LegalNoticeFactory;
+use App\Factory\MessageFactory;
 use App\Factory\MetaFactory;
 use App\Factory\PostFactory;
 use App\Factory\ProductFactory;
 use App\Factory\TagFactory;
 use App\Factory\UserFactory;
+use App\Service\MessageStatus;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -56,6 +59,9 @@ class AppFixtures extends Fixture
         /** Admin and user 1 */
         $group = $this->createGroup($admin, [$users[0]], true);
         $this->createFriendFor($admin, $users[0], $group);
+
+        /** Add somes messages */
+        $this->addMessages($group, 100);
 
         /** Admin and User 2 */
         $group = $this->createGroup($admin, [$users[1]], true);
@@ -120,8 +126,23 @@ class AppFixtures extends Fixture
             'members' => [
                 $admin,
                 ...$users,
-            ]
+            ],
         ]);
+    }
+
+    private function addMessages($group, int $amount = 10) : array
+    {
+
+        $users = $group->getMembers()->toArray();
+
+        return MessageFactory::createMany($amount, function ($index) use ($users, $group) {
+            return [
+                'group' => $group,
+                'sender' => $users[array_rand($users)],
+                'content' => "Message $index",
+            ];
+        });
+
     }
 
     private function createMeta() {
