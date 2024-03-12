@@ -5,4 +5,46 @@
 
 {% block body %}
 
+    <section id="analytics">
+        <article>
+            <h2>{% trans %}Users{% endtrans %}</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>{% trans %}Last 24h{% endtrans %}</h3>
+                    <span class="text-success"><strong>+{{ last24Users }}</strong></span>
+                </div>
+                <div class="card">
+                    <h3>{% trans %}Total{% endtrans %}</h3>
+                    <span class="text-success"><strong>{{ totalUsers }}</strong></span>
+                </div>
+            </div>
+        </article>
+        <article>
+            <h2>{% trans %}Groups{% endtrans %}</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>{% trans %}Last 24h{% endtrans %}</h3>
+                    <span class="text-success"><strong>+{{ last24Groups }}</strong></span>
+                </div>
+                <div class="card">
+                    <h3>{% trans %}Total{% endtrans %}</h3>
+                    <span class="text-success"><strong>{{ totalGroups }}</strong></span>
+                </div>
+            </div>
+        </article>
+        <article>
+            <h2>{% trans %}Messages{% endtrans %}</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>{% trans %}Last 24h{% endtrans %}</h3>
+                    <span class="text-success"><strong>+{{ last24Messages }}</strong></span>
+                </div>
+                <div class="card">
+                    <h3>{% trans %}Total{% endtrans %}</h3>
+                    <span class="text-success"><strong>{{ totalMessages }}</strong></span>
+                </div>
+            </div>
+        </article>
+    </section>
+
 {% endblock %}

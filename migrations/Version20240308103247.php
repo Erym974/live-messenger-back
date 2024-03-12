@@ -21,8 +21,8 @@ final class Version20240308103247 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE user ADD profile_picture_id INT NOT NULL, ADD cover_picture_id INT NOT NULL, DROP profile_picture, DROP cover_picture');
-        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649292E8AE2 FOREIGN KEY (profile_picture_id) REFERENCES file (id)');
-        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649C50D86A0 FOREIGN KEY (cover_picture_id) REFERENCES file (id)');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649292E8AE2 FOREIGN KEY (profile_picture_id) REFERENCES file (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649C50D86A0 FOREIGN KEY (cover_picture_id) REFERENCES file (id) ON DELETE CASCADE');
         $this->addSql('CREATE INDEX IDX_8D93D649292E8AE2 ON user (profile_picture_id)');
         $this->addSql('CREATE INDEX IDX_8D93D649C50D86A0 ON user (cover_picture_id)');
     }

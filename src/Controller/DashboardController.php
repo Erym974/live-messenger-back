@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Group;
 use App\Entity\Job;
 use App\Entity\LegalNotice;
+use App\Entity\Message;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Form\JobType;
@@ -30,8 +32,22 @@ class DashboardController extends AbstractController
     #[Route('/', name: 'admin.dashboard', methods: ['GET'], host: 'dashboard.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function dashboard() : Response
     {
+
+        $last24Users = $this->entityManager->getRepository(User::class)->findLast24Users();
+        $users = $this->entityManager->getRepository(User::class)->findAll();
+        $last24Groups = $this->entityManager->getRepository(Group::class)->findLast24();
+        $groups = $this->entityManager->getRepository(Group::class)->findAll();
+        $last24Messages = $this->entityManager->getRepository(Message::class)->findLast24();
+        $messages = $this->entityManager->getRepository(Message::class)->findAll();
+
         return $this->render('dashboard/index.html.twig', [
-            "active" => "home"
+            "active" => "home",
+            "last24Users" => count($last24Users),
+            "totalUsers" => count($users),
+            "last24Groups" => count($last24Groups),
+            "totalGroups" => count($groups),
+            "last24Messages" => count($last24Messages),
+            "totalMessages" => count($messages)
         ]);
 
     }

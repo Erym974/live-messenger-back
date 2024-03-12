@@ -11,8 +11,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Service\JWT;
 use App\Service\ResponseService;
-use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -56,7 +54,7 @@ class AuthController extends AbstractController
 
         if ($hasNullValue) return $this->responseService->ReturnError(400, "Missing parameters");
 
-        if (!filter_var($datas['email'], FILTER_VALIDATE_EMAIL)) return $this->responseService->ReturnError(400, "Invalid email");
+        if (!filter_var($datas['email'], FILTER_VALIDATE_EMAIL)) return $this->responseService->ReturnError(400, "Your email is invalid");
 
         if (!preg_match('/^(?=.*[^\w\s]).{8,}$/', $datas['password'])) return $this->responseService->ReturnError(400, "password_requirements");
 
@@ -64,7 +62,7 @@ class AuthController extends AbstractController
 
         $user = $this->em->getRepository(User::class)->findOneBy(['email' => $datas['email']]);
 
-        if ($user != null)  return $this->responseService->ReturnError(400, "Email already used");
+        if ($user != null)  return $this->responseService->ReturnError(400, "This email is already in use");
 
         $user = new User();
         $user->setFirstname($datas['firstname'])

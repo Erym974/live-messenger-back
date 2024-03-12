@@ -21,7 +21,7 @@ class Message
     private ?int $id = null;
 
     #[ORM\ManyToOne(fetch: "LAZY")]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['messages:read'])]
     private ?User $sender = null;
 

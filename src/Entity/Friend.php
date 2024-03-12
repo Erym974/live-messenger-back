@@ -19,7 +19,7 @@ class Friend
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne()]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['user:friend'])]
     private ?User $friend = null;

@@ -53,6 +53,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 //            ->getResult()
 //        ;
 //    }
+   /**
+    * @return User[] Returns an array of User objects
+    */
+   public function findLast24Users(): array
+   {
+
+        $date = new \DateTime();
+        $date->modify('-24 hours');
+
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.createdAt >= :date')
+            ->setParameter('date', $date)
+            ->orderBy('u.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+   }
 
 //    public function findOneBySomeField($value): ?User
 //    {

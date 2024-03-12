@@ -34,10 +34,6 @@ class Group
     #[Groups(['user:groups', 'group:read'])]
     private ?Message $lastMessage = null;
 
-    // #[ORM\Column(length: 255, nullable: true)]
-    // #[Groups(['user:groups', 'group:read'])]
-    // private ?string $picture = null;
-
     #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['user:groups', 'group:read'])]
@@ -48,7 +44,7 @@ class Group
     private ?string $emoji = "👍";
 
     #[ORM\ManyToOne(fetch: "LAZY")]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups(['user:groups', 'group:read'])]
     private ?User $administrator = null;
 
@@ -153,17 +149,6 @@ class Group
 
         return $this;
     }
-
-    // public function getPicture(): ?string
-    // {
-    //     return $this->picture;
-    // }
-
-    // public function setPicture(?string $picture): static
-    // {
-    //     $this->picture = $picture;
-    //     return $this;
-    // }
 
     public function getPicture(bool $entity = false): File|null|string
     {

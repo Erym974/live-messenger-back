@@ -41,11 +41,11 @@ class UserController extends AbstractController
         if ($params == null) return $this->responseService->ReturnError(400, "Missing parameters");
         if ($file == null) return $this->responseService->ReturnError(400, "Missing file parameters");
 
-        if ($params['picture'] != "profile" && $params['picture'] != "cover") {
-            return $this->responseService->ReturnError(400, "Invalid parameters");
-        }
+        if ($params['picture'] != "profile" && $params['picture'] != "cover") return $this->responseService->ReturnError(400, "Invalid parameters");
 
-        $uploadFileResponse = $uploadFileService->uploadFile($file, "users_upload_directory");
+        $uploadFileResponse = $uploadFileService->uploadFile($file, "users_upload_directory", ["gif", "jpg", "png", "jpeg"]);
+
+        if (!$uploadFileResponse->getStatus()) return $this->responseService->ReturnError(400, $uploadFileResponse->getMessage());
 
         switch($params['picture']) {
             case "profile":
@@ -108,6 +108,19 @@ class UserController extends AbstractController
         return $this->responseService->ReturnSuccess([
             "user" => $user,
         ], ['groups' => 'user:read']);
+    }
+
+    #[Route('users/me', name: 'api.users.me.delete', methods: ['DELETE'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
+    public function me_delete(Request $request): JsonResponse
+    {
+
+        /** @var User */
+        $user = $this->getUser();
+
+        $this->em->remove($user);
+        $this->em->flush();
+
+        return $this->responseService->ReturnSuccess(["Deleted" => true]);
     }
 
     #[Route('users/me', name: 'api.users.me.get', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]

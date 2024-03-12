@@ -126,7 +126,7 @@ class MessagesController extends AbstractController
 
         $maxPage = ceil($total / $limit);
 
-        return $this->responseService->ReturnSuccess(["total" => $total, 'size' => count($messages), 'pages' => $maxPage, 'messages' => $messages], ['groups' => 'messages:read']);
+        return $this->responseService->ReturnSuccess(["total" => $total, 'size' => count($messages), 'page' => $page, 'pages' => $maxPage, 'messages' => $messages], ['groups' => 'messages:read']);
     }
 
     #[Route('message', name: 'api.messages.message', methods: ['GET', 'PATCH'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]

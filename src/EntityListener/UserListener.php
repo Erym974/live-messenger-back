@@ -3,6 +3,7 @@
 namespace App\EntityListener;
 
 use App\Entity\File;
+use App\Entity\Group;
 use App\Entity\Meta;
 use App\Entity\Setting;
 use App\Entity\User;
@@ -38,8 +39,27 @@ class UserListener
         $this->encodePassword($user);
     }
 
+
+    public function preRemove(User $user) {
+        $profilePicture = $user->getProfilePicture(true);
+        $coverPicture = $user->getCoverPicture(true);
+        $this->em->remove($profilePicture);
+        $this->em->remove($coverPicture);
+        
+        $groups = $this->em->getRepository(Group::class)->getGroupByAdmin($user);
+
+        foreach($groups as $group) {
+            if($group->isPrivate()) {
+                $this->em->remove($group);
+            } else {
+                $group->setAdministrator($group->getMembers()[0]);
+                $this->em->persist($group);
+            }
+        }
+    }
+
     
-    public function encodePassword(User $user) {
+    private function encodePassword(User $user) {
         if($user->getPlainPassword() == null) return;
         
         $user->setPassword($this->hasher->hashPassword(

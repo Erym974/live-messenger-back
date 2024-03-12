@@ -135,8 +135,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         foreach ($roles as $role) {
-            if(str_contains(strtolower($role),'admin')) return"Administrator";
-            if(str_contains(strtolower($role),'moderator')) return"Moderator";
+            if(str_contains(strtolower($role),'admin')) return "Administrator";
+            if(str_contains(strtolower($role),'moderator')) return "Moderator";
         }
         return "User";
     }
@@ -147,7 +147,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -162,7 +161,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function hasRole(string $role = "ROLE_USER"): bool
     {
-        // if($role == "ROLE_USER") return true;
         return in_array($role, $this->roles);
     }
 
