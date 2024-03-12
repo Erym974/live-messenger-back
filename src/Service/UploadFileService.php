@@ -32,7 +32,11 @@ class UploadFileService extends AbstractService {
 
         $filename = md5(uniqid()) . "." . $fileToUpload->guessExtension();
         $type = $fileToUpload->getClientmimeType();
-        $fileToUpload->move($this->getParameter($uploadPath), $filename);
+        try {
+            $fileToUpload->move($this->getParameter($uploadPath), $filename);
+        } catch (\Exception $e) {
+            return new UploadFileServiceResponse(false, "An error occurred when writing the file on the server", null);
+        }
 
         $parent = null;
 
