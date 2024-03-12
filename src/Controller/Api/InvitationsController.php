@@ -68,7 +68,7 @@ class InvitationsController extends AbstractController
         $friend = $this->em->getRepository(User::class)->findOneBy(['friendCode' => $code]);
 
         if($friend == null) return $this->responseService->ReturnError(404, "User not found");
-        if($friend === $user) return $this->responseService->ReturnError(400, "Yourself");
+        if($friend === $user) return $this->responseService->ReturnError(400, "You cannot send you a friend request");
 
         if($friend->getSetting('allow-friend-request') != "true") return $this->responseService->ReturnError(400, "User doesn't allow friend request");
 
@@ -108,7 +108,7 @@ class InvitationsController extends AbstractController
             }
         };
 
-        if($user->hasFriend($friend)) return $this->responseService->ReturnError(400, "Already your friend");
+        if($user->hasFriend($friend)) return $this->responseService->ReturnError(400, "This user is already your friend");
 
         $sendInviteResponse = $invitationService->sendInvitation($user, $friend);
 
