@@ -36,6 +36,37 @@ class GroupRepository extends ServiceEntityRepository
 //        ;
 //    }
 
+   /**
+    * @return Group[] Returns an array of Group objects
+    */
+   public function getGroupByAdmin($admin): array
+   {
+       return $this->createQueryBuilder('g')
+           ->andWhere('g.administrator = :user')
+           ->setParameter('user', $admin)
+           ->getQuery()
+           ->getResult()
+       ;
+   }
+
+    /**
+    * @return Group[] Returns an array of Group object
+    */
+    public function findLast24(): array
+    {
+ 
+         $date = new \DateTime();
+         $date->modify('-24 hours');
+ 
+         return $this->createQueryBuilder('g')
+             ->andWhere('g.createdAt >= :date')
+             ->setParameter('date', $date)
+             ->orderBy('g.id', 'ASC')
+             ->getQuery()
+             ->getResult()
+         ;
+    }
+
 //    public function findOneBySomeField($value): ?Group
 //    {
 //        return $this->createQueryBuilder('g')

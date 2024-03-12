@@ -37,6 +37,24 @@ class MessageRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    /**
+    * @return Message[] Returns an array of Message objects
+    */
+   public function findLast24(): array
+   {
+
+        $date = new \DateTime();
+        $date->modify('-24 hours');
+
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.sended_at >= :date')
+            ->setParameter('date', $date)
+            ->orderBy('m.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+   }
 //    /**
 //     * @return Message[] Returns an array of Message objects
 //     */

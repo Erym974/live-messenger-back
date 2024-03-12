@@ -1,2 +1,37 @@
 password_requirements: Password must be at least 8 characters and contain a special character
 password_mismatch: Password does not match
+You are not a member of this group: You are not a member of this group
+Missing parameters: Missing parameters
+Your email is invalid: Your email is invalid
+This email is already in use: This email is already in use
+
+### DASHBOARD
+Dashboard: Dashboard
+Users: Users
+Careers: Careers
+Terms: Terms
+Privacy: Privacy
+Administrator: Administrator
+Moderator: Moderator
+My account: My account
+Logout: Logout
+Sign-in: Sign-in
+Password: Mot de passe
+Forgot your password?: Forgot your password?
+Personnal information: Personnal information
+Firstname: Firstname
+Fullname: Fullname
+Lastname: Lastname
+Security: Security
+Created At: Created At
+See: See
+Title: Title
+Location: Location
+Content: Content
+Edit terms: Edit terms
+Edit privacy: Edit privacy
+Change language: Change language
+Update terms: Update terms
+Update privacy: Update privacy
+Last 24h: Last 24h
+Groups: Groups

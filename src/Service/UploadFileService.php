@@ -22,13 +22,13 @@ class UploadFileServiceResponse {
 
 class UploadFileService extends AbstractService {
 
-    private array $allowedMimeTypes = ["image/jpeg", "image/png"];
-
-    public function uploadFile($fileToUpload, $uploadPath) : UploadFileServiceResponse
+    public function uploadFile($fileToUpload, string $uploadPath, array $allowedType) : UploadFileServiceResponse
     {
 
-        if(!in_array($fileToUpload->getMimeType(), $this->allowedMimeTypes)) return new UploadFileServiceResponse(false, "File is not an valide image", null);
-        if($fileToUpload->getSize() > 1000000) return new UploadFileServiceResponse(false, "File is too big", null);
+        if($fileToUpload == null) return new UploadFileServiceResponse(false, "No file to upload", null);
+        if($fileToUpload->getSize() > 5000000 || $fileToUpload->getError() === 1) return new UploadFileServiceResponse(false, "File size may not exceed 5MB", null);
+
+        if(!in_array($fileToUpload->guessExtension(), $allowedType)) return new UploadFileServiceResponse(false, "File type not allowed", null);
 
         $filename = md5(uniqid()) . "." . $fileToUpload->guessExtension();
         $type = $fileToUpload->getClientmimeType();

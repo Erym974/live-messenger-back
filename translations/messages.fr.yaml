@@ -1,2 +1,42 @@
 password_requirements: Le mot de passe doit comporter au moins 8 caractères et contenir un caractère spécial.
 password_mismatch: Le mot de passe ne correspond pas.
+You are not a member of this group: Vous n'êtes pas membre de ce groupe.
+Missing parameters: Paramètres manquants.
+Your email is invalid: Votre email est invalide.
+This email is already in use: Cette adresse mail est déjà utilisées
+
+
+### DASHBOARD
+Dashboard: Tableau de bord
+Users: Utilisateurs
+Careers: Carrières
+Terms: Conditions
+Privacy: Confidentialité
+Administrator: Administrateur
+Moderator: Modérateur
+My account: Mon compte
+Logout: Se deconnecter
+Sign-in: Connexion
+Password: Mot de passe
+Forgot your password?: Mot de passe oublié?
+Personnal information: Informations personnelles
+Firstname: Prénom
+Fullname: Nom complet
+Lastname: Nom
+Security: Sécurité
+Created At: Créé le
+See: Voir
+Title: Titre
+Location: Lieu
+Content: Contenu
+Edit terms: Modifier les conditions
+Edit privacy: Modifier la confidentialité
+Change language: Changer de langue
+Update terms: Mettre à jour les conditions
+Update privacy: Mettre à jour la confidentialité
+Last 24h: Dernières 24h
+Groups: Groupes
+
+
+
+

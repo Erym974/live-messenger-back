@@ -3,11 +3,14 @@
         <div class="top py-4 df aic jcb">
             <a href="{{ path('admin.dashboard') }}" class="tdn">
                 <div class="logo df aic jcc">
-                    <h2 class="m-0 text-logo">Swift<span class="text-primary">Chat</span></h2>
+                    <img src="/logo.svg" alt="Website logo" width="50" height="50" class="">
+                    <div class="logo df aic jcc">
+                        <h2 class="m-0 text-logo">Swift<span class="text-primary">Chat</span></h2>
+                    </div>
                 </div>
             </a>
-            <div class="close me-4 d-md-none df fc aic jcc" id="close-btn">
-                <span class="material-icons-sharp">close</span>
+            <div class="close me-4 d-md-none df fc aic jcc" id="close-btn" {{ stimulus_controller('aside') }}>
+                <span class="material-icons-sharp" {{ stimulus_action('aside', 'toggleAside') }}>close</span>
             </div>
         </div>
 

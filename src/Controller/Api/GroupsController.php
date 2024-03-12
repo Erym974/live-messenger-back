@@ -127,8 +127,11 @@ class GroupsController extends AbstractController
 
         if (count($group->getMembers()) < 3) return $this->responseService->ReturnError(400, "You need at least 2 members to create a group");
 
+        
         $this->em->persist($group);
         $this->em->flush();
+        
+        $this->groupService->parseDatas($group);
 
         return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
     }
