@@ -8,12 +8,27 @@ use App\Entity\Invitation;
 use App\Entity\User;
 use App\Service\AbstractService;
 
+class InvitationServiceResponse {
+
+    public function __construct(
+        public bool $status,
+        public string $message,
+        public ?Invitation $invitation
+    ) {}
+
+    public function getStatus(): bool {return $this->status;}
+    public function getMessage(): string {return $this->message;}
+    public function getInvitation(): Invitation {return $this->invitation;}
+
+}
+
 class InvitationService extends AbstractService {
 
-    public function sendInvitation(User $emitter, User $receiver) : ?Invitation
+    public function sendInvitation(User $emitter, User $receiver) : ?InvitationServiceResponse
     {
         $invitation = $this->em->getRepository(Invitation::class)->findInvitation($emitter, $receiver);
-        if($invitation) return null;
+
+        if($invitation) return new InvitationServiceResponse(true, "Invitation already sent", null);
 
         $invitation = new Invitation();
         $invitation->setEmitter($emitter);
@@ -22,10 +37,10 @@ class InvitationService extends AbstractService {
         $this->em->persist($invitation);
         $this->em->flush();
 
-        return $invitation;
+        return new InvitationServiceResponse(true, "Invitation sent", $invitation);
     }
 
-    public function acceptInvitation(Invitation $invitation) : bool
+    public function acceptInvitation(Invitation $invitation) : InvitationServiceResponse
     {
 
         
@@ -56,7 +71,6 @@ class InvitationService extends AbstractService {
                 $this->em->persist($group);
             }
 
-
             $friend_emitter->setConversation($group);
             $friend_receiver->setConversation($group);
 
@@ -67,27 +81,26 @@ class InvitationService extends AbstractService {
             $this->em->persist($receiver);
             $this->em->flush();
 
-            return true;
+            return new InvitationServiceResponse(true, "Accepted", null);
         } catch (\Throwable $th) {
-            dd($th->getMessage());
-            return false;
+            return new InvitationServiceResponse(false, "Can't accept invitation", null);
         }
 
     }
 
-    public function declineInvitation(Invitation $invitation) : bool
+    public function declineInvitation(Invitation $invitation) : InvitationServiceResponse
     {
         return $this->removeInvitation($invitation);
     }
 
-    private function removeInvitation(Invitation $invitation) : bool
+    private function removeInvitation(Invitation $invitation) : InvitationServiceResponse
     {
         try {
             $this->em->remove($invitation);
             $this->em->flush();
-            return true;
+            return new InvitationServiceResponse(true, "Invitation removed successfully", null);
         } catch (\Throwable $th) {
-            return false;
+            return new InvitationServiceResponse(false, $th->getMessage(), null);
         }
     }
 
