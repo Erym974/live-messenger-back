@@ -28,14 +28,17 @@ class InvitationService extends AbstractService {
     {
         $invitation = $this->em->getRepository(Invitation::class)->findInvitation($emitter, $receiver);
 
-        if($invitation) return new InvitationServiceResponse(true, "Invitation already sent", null);
+        if($invitation) return new InvitationServiceResponse(false, "Invitation already sent", null);
 
-        $invitation = new Invitation();
-        $invitation->setEmitter($emitter);
-        $invitation->setReceiver($receiver);
-
-        $this->em->persist($invitation);
-        $this->em->flush();
+        try {
+            $invitation = new Invitation();
+            $invitation->setEmitter($emitter);
+            $invitation->setReceiver($receiver);
+            $this->em->persist($invitation);
+            $this->em->flush();
+        } catch (\Exception $e) {
+                return new InvitationServiceResponse(false, $e->getMessage(), null);
+        }
 
         return new InvitationServiceResponse(true, "Invitation sent", $invitation);
     }

@@ -112,7 +112,7 @@ class InvitationsController extends AbstractController
 
         $sendInviteResponse = $invitationService->sendInvitation($user, $friend);
 
-        if(!$sendInviteResponse->getStatus()) return $this->responseService->ReturnError(500, $invitation->getMessage());
+        if(!$sendInviteResponse->getStatus()) return $this->responseService->ReturnError(500, $sendInviteResponse->getMessage());
         return $this->responseService->ReturnSuccess($sendInviteResponse->getInvitation(), ['groups' => 'invitation:read']);
 
     }
