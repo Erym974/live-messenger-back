@@ -79,7 +79,7 @@ class InvitationsController extends AbstractController
 
             $friend = $invitation->getEmitter();
 
-            if($friend === $user) return $this->responseService->ReturnError(400, "Already sent invitation");
+            if($friend === $user) return $this->responseService->ReturnError(400, "You already send an invitation to this user");
             if($invitation->getReceiver() === $user) {
 
                 $invitationResponse = $invitationService->acceptInvitation($invitation);
@@ -158,3 +158,14 @@ class InvitationsController extends AbstractController
     }
 
 }
+
+
+/** 
+ * 
+ * Faire un scenario de démo 
+ * Faire un plan de présentation front & back
+ * Zoomer l'IDE
+ * 
+ * 
+ * 
+ */

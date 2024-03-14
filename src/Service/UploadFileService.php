@@ -22,7 +22,7 @@ class UploadFileServiceResponse {
 
 class UploadFileService extends AbstractService {
 
-    public function uploadFile($fileToUpload, string $uploadPath, array $allowedType) : UploadFileServiceResponse
+    public function uploadFile($fileToUpload, string $uploadPath, array $allowedType = ["png", "jpeg", "gif", "jpg"]) : UploadFileServiceResponse
     {
 
         if($fileToUpload == null) return new UploadFileServiceResponse(false, "No file to upload", null);

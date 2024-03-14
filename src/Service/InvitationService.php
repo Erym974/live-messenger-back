@@ -28,7 +28,7 @@ class InvitationService extends AbstractService {
     {
         $invitation = $this->em->getRepository(Invitation::class)->findInvitation($emitter, $receiver);
 
-        if($invitation) return new InvitationServiceResponse(false, "Invitation already sent", null);
+        if($invitation) return new InvitationServiceResponse(false, "You already send an invitation to this user", null);
 
         try {
             $invitation = new Invitation();

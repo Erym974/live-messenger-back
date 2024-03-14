@@ -23,7 +23,7 @@ class GroupsController extends AbstractController
     {
     }
 
-    /** Modification des membres */
+    /** Modification lié à un membre d'un groupe (promote, kick, leave) */
     #[Route('members/{group}', name: 'api.members', methods: ['POST'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function members(Group $group, Request $request): JsonResponse
     {
@@ -158,7 +158,7 @@ class GroupsController extends AbstractController
         return $this->responseService->ReturnSuccess($groups, ['groups' => 'user:groups']);
     }
 
-    /** Récupération d'un groupe */
+    /** Récupération d'un groupe en particulier */
     #[Route('groups/{group}', name: 'api.group.get', methods: ['GET'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function group_get(Group $group, Request $request): JsonResponse
     {
@@ -170,7 +170,7 @@ class GroupsController extends AbstractController
         return $this->responseService->ReturnSuccess($group, ['groups' => 'group:read']);
     }
 
-    /** Récupération d'un groupe */
+    /** Modification d'un groupe (nom, icone, image) */
     #[Route('groups/{group}', name: 'api.group.patch', methods: ['PATCH'], host: 'api.swiftchat.{extension}', defaults: ['extension' => '%default_extension%'], requirements: ['extension' => '%default_extension%'])]
     public function group_patch(Group $group, Request $request): JsonResponse
     {
