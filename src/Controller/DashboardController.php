@@ -91,6 +91,7 @@ class DashboardController extends AbstractController
             $this->entityManager->persist($job);
             $this->entityManager->flush();
             $this->addFlash('success', 'Job created successfully');
+            return $this->redirectToRoute('admin.dashboard.careers');
         }
 
         return $this->render('dashboard/careers.html.twig', [
@@ -195,8 +196,8 @@ class DashboardController extends AbstractController
             $job = $form->getData();
             $this->entityManager->persist($job);
             $this->entityManager->flush();
-            $this->addFlash('success', 'Job created successfully');
-            return $this->redirectToRoute('admin.dashboard.careers');
+            $this->addFlash('success', 'Job edited successfully');
+            return $this->redirectToRoute('admin.dashboard.career', ['id' => $job->getId()]);
         }
 
         return $this->render('dashboard/career.html.twig', [
